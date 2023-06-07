@@ -1,8 +1,8 @@
-# proenfo
+# ProEnFo
 
 ## Introduction
 
-This repository aims at implementing federated kernel online learning for quantile regression.
+This repository aims at implementing routines for probabilistic energy forecasting.
 
 ## Prerequisites
 - Python 
