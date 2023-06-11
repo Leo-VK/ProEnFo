@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This repository aims at implementing routines for probabilistic energy forecasting.
+This is the code related to the paper "Benchmarks and Custom Package for Electrical Load Forecasting"(https://openreview.net/forum?id=O61RXF9dvD&invitationId=NeurIPS.cc/2023/Track/Datasets_and_Benchmarks/Submission433/-/Supplementary_Material&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3DNeurIPS.cc%2F2023%2FTrack%2FDatasets_and_Benchmarks%2FAuthors%23author-tasks)) submitted to Neurips 2023 Datasets and Benchmarks Track. This repository mainly aims at implementing routines for probabilistic energy forecasting. However, we also provide the implementation of relevant point forecasting models.
 
 ## Prerequisites
 - Python 
