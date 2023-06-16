@@ -1,7 +1,7 @@
 import pandas as pd
 import scipy.stats as stats
 from statsmodels.tsa.stattools import acovf
-
+from typing import Tuple
 
 class SkillScore:
     """Skill Score for two error metric values"""
@@ -17,7 +17,7 @@ class DieboldMarianoTest:
         self.horizon = horizon
         self.harvey_adjusted = harvey_adjusted
 
-    def calculate_score(self, reference_error: pd.Series, error: pd.Series) -> tuple[pd.Series, float]:
+    def calculate_score(self, reference_error: pd.Series, error: pd.Series) -> Tuple[pd.Series, float]:
         if self.norm == 1:
             differential = reference_error.abs() - error.abs()
         if self.norm == 2:

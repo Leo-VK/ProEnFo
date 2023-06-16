@@ -4,6 +4,7 @@ import cvxpy as cp
 import numpy as np
 import statsmodels.api as sm
 from sklearn.base import BaseEstimator, RegressorMixin
+from typing import List
 
 
 class QuantileOptimizationModel:
@@ -93,7 +94,7 @@ class QuantileSupportVectorRegression(QuantileOptimizationModel, BaseEstimator, 
 
 class MultiQuantileOptimizationModel:
     """Class representing multi quantile optimization"""
-    def __init__(self, quantiles: list[float], solver: Literal["ECOS", "OSQP", "SCS"]):
+    def __init__(self, quantiles: List[float], solver: Literal["ECOS", "OSQP", "SCS"]):
         self.quantiles = np.array(quantiles)
         self.solver = solver
         self.weights: np.ndarray
@@ -103,7 +104,7 @@ class MultiQuantileLinearProgram(MultiQuantileOptimizationModel, BaseEstimator, 
     """Multi Quantile Linear Program ("Nonparametric Quantile Regression", I. Takeuchi)"""
 
     def __init__(self,
-                 quantiles: Optional[list[float]],
+                 quantiles: Optional[List[float]],
                  fit_intercept: bool = True,
                  non_crossing: bool = False,
                  solver: Literal["ECOS", "OSQP", "SCS"] = 'ECOS_BB'):

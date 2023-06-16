@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from scipy import signal
 import statsmodels.api as sm
+from typing import List, Dict
 
 
 class DataGenerator(ABC):
@@ -12,7 +13,7 @@ class DataGenerator(ABC):
     def generate_series(self, length: int) -> pd.Series:
         pass
 
-    def generate_dataframe(self, length: int, offset_by_column: dict[str, list[float]]) -> pd.Series:
+    def generate_dataframe(self, length: int, offset_by_column: Dict[str, List[float]]) -> pd.Series:
         data = {}
         for column in offset_by_column:
             data[column] = self.generate_series(length)
@@ -149,8 +150,8 @@ class HarmonicDataGenerator(DataGenerator):
 
 class AutoRegressiveDataGenerator(DataGenerator):
     def __init__(self,
-                 p_coefs: Optional[list[int]] = None,
-                 q_coefs: Optional[list[int]] = None):
+                 p_coefs: Optional[List[int]] = None,
+                 q_coefs: Optional[List[int]] = None):
         self.p_coefs = p_coefs if p_coefs else [1]
         self.q_coefs = q_coefs if q_coefs else [1]
 

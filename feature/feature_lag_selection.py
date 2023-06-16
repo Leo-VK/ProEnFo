@@ -5,6 +5,7 @@ import pandas as pd
 from statsmodels.tsa.stattools import acf, pacf
 
 from feature.time_constant import TimeConstant
+from typing import List
 
 
 class FeatureLagSelectionStrategy(ABC):
@@ -15,7 +16,7 @@ class FeatureLagSelectionStrategy(ABC):
         self.name = self.__class__.__name__.replace("Strategy", "").lower()
 
     @abstractmethod
-    def select_features(self, data: pd.Series, horizon: int) -> list[int]:
+    def select_features(self, data: pd.Series, horizon: int) -> List[int]:
         pass
 
 
@@ -25,18 +26,18 @@ class NoFeatureLagSelectionStrategy(FeatureLagSelectionStrategy):
     def __init__(self):
         super().__init__(number_of_lags=0)
 
-    def select_features(self, data: pd.Series, horizon: int) -> list[int]:
+    def select_features(self, data: pd.Series, horizon: int) -> List[int]:
         return []
 
 
 class ManualStrategy(FeatureLagSelectionStrategy):
     """Choose manually predefined feature lags"""
 
-    def __init__(self, lags: list[int]):
+    def __init__(self, lags: List[int]):
         super().__init__(number_of_lags=len(lags))
         self.lags = lags
 
-    def select_features(self, data: pd.Series, horizon: int) -> list[int]:
+    def select_features(self, data: pd.Series, horizon: int) -> List[int]:
         if horizon < 1:
             raise ValueError('horizon is < 1!')
 
@@ -55,7 +56,7 @@ class RecentStrategy(FeatureLagSelectionStrategy):
     def __init__(self, number_of_lags: int):
         super().__init__(number_of_lags=number_of_lags)
 
-    def select_features(self, data: pd.Series, horizon: int) -> list[int]:
+    def select_features(self, data: pd.Series, horizon: int) -> List[int]:
         if horizon < 1:
             raise ValueError('horizon is < 1!')
 
@@ -70,7 +71,7 @@ class AutoCorrelationStrategy(FeatureLagSelectionStrategy):
     def __init__(self, number_of_lags: int):
         super().__init__(number_of_lags=number_of_lags)
 
-    def select_features(self, data: pd.Series, horizon: int) -> list[int]:
+    def select_features(self, data: pd.Series, horizon: int) -> List[int]:
         if horizon < 1:
             raise ValueError('horizon is < 1!')
 
@@ -90,7 +91,7 @@ class PartialAutoCorrelationStrategy(FeatureLagSelectionStrategy):
     def __init__(self, number_of_lags: int):
         super().__init__(number_of_lags=number_of_lags)
 
-    def select_features(self, data: pd.Series, horizon: int) -> list[int]:
+    def select_features(self, data: pd.Series, horizon: int) -> List[int]:
         if horizon < 1:
             raise ValueError('horizon is < 1!')
 
@@ -104,7 +105,7 @@ class PartialAutoCorrelationStrategy(FeatureLagSelectionStrategy):
         return acf_features
 
 
-def _extract_lags(acf_values: np.ndarray, horizon: int, number_of_lags: int) -> list[int]:
+def _extract_lags(acf_values: np.ndarray, horizon: int, number_of_lags: int) -> List[int]:
     """Extracts lags in descending order considering horizon"""
 
     # Negation to emulate descending order

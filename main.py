@@ -23,8 +23,6 @@ import warnings
 warnings.filterwarnings("ignore")
 import ast
 
-
-
 def setup_seed(seed=0):
     random.seed(seed)
     np.random.seed(seed)
@@ -128,6 +126,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
 

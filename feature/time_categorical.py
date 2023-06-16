@@ -7,14 +7,18 @@ from sklearn.preprocessing import FunctionTransformer
 
 from feature.time_constant import TimeConstant
 
+from typing import List,Dict
 
 class TimeCategorical(ABC):
     """Class representing time categorical features"""
 
-    def __init__(self, transformer: Optional[Callable] = None):
-        self.transformer = transformer
-        self.name = self.__class__.__name__ if transformer is None else f"{transformer.__name__.replace('_transformer', '')}({self.__class__.__name__})"
-
+    def __init__(self, transformer_dict: Dict = None):
+        if transformer_dict is not None:
+            self.transformer = transformer_dict['transformer']
+        else:
+            self.transformer = None
+        # self.name = self.__class__.__name__ if transformer is None else f"{type(transformer).__name__.replace('_transformer', '')}({self.__class__.__name__})"
+        self.name = self.__class__.__name__ if transformer_dict is None else self.__class__.__name__+transformer_dict['name']
     @abstractmethod
     def calculate_feature(self, datetime_series: pd.Series) -> pd.Series:
         pass
@@ -23,7 +27,7 @@ class TimeCategorical(ABC):
 class Season(TimeCategorical):
     """Season of the year in [0, ..., 3]"""
 
-    def __init__(self, seasonality: Optional[list[int]] = None):
+    def __init__(self, seasonality: Optional[List[int]] = None):
         super().__init__()
         self.seasonality = seasonality if not None else 2 * [0] + 3 * [1] + 3 * [2] + 3 * [3] + 1 * [0]
         self.seasonality_per_month = {i: j for i, j in zip(range(1, 13), self.seasonality)}
@@ -58,6 +62,12 @@ class Day(TimeCategorical):
 
     def calculate_feature(self, datetime_series: pd.Series) -> pd.Series:
         return datetime_series.dt.day
+    
+class Weekday(TimeCategorical):
+    """Day of month in [1, ..., 31]"""
+
+    def calculate_feature(self, datetime_series: pd.Series) -> pd.Series:
+        return datetime_series.dt.weekday
 
 
 class Hour(TimeCategorical):
@@ -76,24 +86,24 @@ class Minute(TimeCategorical):
 
 def sin_transformer():
     """Apply sine transform to TimeCategorical"""
-    return FunctionTransformer(
-        lambda x: np.sin(2 * np.pi * x / (TimeConstant.SECONDS_PER_DAY // x.index.freq.delta.seconds)))
+    return {'name':'sin_transformer','transformer':FunctionTransformer(
+        lambda x: np.sin(2 * np.pi * x / (TimeConstant.SECONDS_PER_DAY // x.index.freq.delta.seconds)))}
 
 
 def cos_transformer():
     """Apply cosine transform to TimeCategorical"""
-    return FunctionTransformer(
-        lambda x: np.cos(2 * np.pi * x / (TimeConstant.SECONDS_PER_DAY // x.index.freq.delta.seconds)))
+    return {'name':'cos_transformer','transformer':FunctionTransformer(
+        lambda x: np.cos(2 * np.pi * x / (TimeConstant.SECONDS_PER_DAY // x.index.freq.delta.seconds)))}
 
 
-def add_datetime_features(data: pd.DataFrame, feature_strategies: list[TimeCategorical]) -> pd.DataFrame:
+def add_datetime_features(data: pd.DataFrame, feature_strategies: List[TimeCategorical]) -> pd.DataFrame:
     """Add datetime features in ascending order"""
     for strategy in reversed(feature_strategies):
         feature = strategy.calculate_feature(data.index.to_series())
         if feature.sum() == 0:
             raise ValueError("Resolution does not support this TimeCategorical")
         if strategy.transformer is not None:
-            feature = strategy.transformer().fit_transform(feature)
-        data.insert(loc=0, column=strategy.name, value=feature)
+            feature = strategy.transformer.fit_transform(feature)
+        data.insert(loc=data.shape[1], column=strategy.name, value=feature)
 
     return data

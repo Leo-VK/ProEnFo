@@ -14,15 +14,24 @@ from models.optimization_model import QuantileLinearProgram, QuantileSupportVect
 from preprocessing.quantile_format import check_quantile_list
 from utils import randomness, pytorchtools
 
+from typing import List, Tuple, Dict
+
+import numpy as np 
+import torch.nn as nn
+import torch
+from torch.nn import functional as F
+
+
 randomness.set_random_seeds(0)  # reproducibility
 
 
 class QuantileRegressor(ABC):
     """Class representing a regressor with optional scaler"""
 
-    def __init__(self, quantiles: Optional[list[float]], scaler: Optional[Any] = None,
-                 model: Optional[list[Any]] = None):
-        self.scaler = scaler
+    def __init__(self, quantiles: Optional[List[float]], X_scaler: Optional[Any] = None, y_scaler: Optional[Any] = None,
+                 model: Optional[List[Any]] = None):
+        self.X_scaler = X_scaler
+        self.y_scaler = y_scaler
         self.model = model
         self.quantiles = check_quantile_list(quantiles)
         self.name = self.__class__.__name__
@@ -35,7 +44,7 @@ class QuantileRegressor(ABC):
 class QR(QuantileRegressor):
     """Quantile linear program"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         super().__init__(quantiles=quantiles)
 
     def set_params(self, input_dim: int):
@@ -46,7 +55,7 @@ class QR(QuantileRegressor):
 class L1QR(QuantileRegressor):
     """Classical quantile regression with optional scaler"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         super().__init__(quantiles=quantiles)
 
     def set_params(self, input_dim: int):
@@ -57,7 +66,7 @@ class L1QR(QuantileRegressor):
 class QSVR(QuantileRegressor):
     """Quantile Support Vector regression with cvxpy"""
 
-    def __init__(self, quantiles: list[float], variant: Literal["sparse", "epsilon"] = "epsilon"):
+    def __init__(self, quantiles: List[float], variant: Literal["sparse", "epsilon"] = "epsilon"):
         super().__init__(quantiles=quantiles)
         self.variant = variant
 
@@ -69,7 +78,7 @@ class QSVR(QuantileRegressor):
 class QGBR(QuantileRegressor):
     """Quantile Gradient Boosting Regression from sklearn"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         super().__init__(quantiles=quantiles)
 
     def set_params(self, input_dim: int):
@@ -80,9 +89,10 @@ class QGBR(QuantileRegressor):
 class QFFNN(QuantileRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         super().__init__(
-            scaler=StandardScaler(),
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
             quantiles=quantiles)
 
     def set_params(self, input_dim: int):
@@ -95,9 +105,10 @@ class QFFNN(QuantileRegressor):
 class QLSTM(QuantileRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         super().__init__(
-            scaler=StandardScaler(),
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
             quantiles=quantiles)
 
     def set_params(self, input_dim: int):
@@ -110,9 +121,10 @@ class QLSTM(QuantileRegressor):
 class QCNN(QuantileRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         super().__init__(
-            scaler=StandardScaler(),
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
             quantiles=quantiles)
 
     def set_params(self, input_dim: int):
@@ -125,8 +137,9 @@ class QCNN(QuantileRegressor):
 class MultiQuantileRegressor(ABC):
     """Class representing a regressor with optional scaler"""
 
-    def __init__(self, quantiles: list[float], scaler: Optional[Any] = None, model: Optional[Any] = None):
-        self.scaler = scaler
+    def __init__(self, quantiles: List[float],  X_scaler: Optional[Any] = None, y_scaler: Optional[Any] = None, model: Optional[Any] = None):
+        self.X_scaler = X_scaler
+        self.y_scaler = y_scaler
         self.model = model
         self.quantiles = check_quantile_list(quantiles)
         self.name = self.__class__.__name__
@@ -147,10 +160,11 @@ class MultiQuantileRegressor(ABC):
 class MQCE(MultiQuantileRegressor):
     """Multi Quantile linear program"""
 
-    def __init__(self, quantiles: list[float]):
-        super().__init__(quantiles=quantiles)
+    def __init__(self, quantiles: List[float]):
+        super().__init__(X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),quantiles=quantiles)
 
-    def set_params(self, input_dim: int):
+    def set_params(self, input_dim: int,external_features_diminsion: int):
         self.model = ConditionalErrorQuantile(quantiles=self.quantiles)
         return self
 
@@ -158,10 +172,11 @@ class MQCE(MultiQuantileRegressor):
 class MQBCE(MultiQuantileRegressor):
     """Multi Quantile Boostrap Conditional Error Model"""
 
-    def __init__(self, quantiles: list[float]):
-        super().__init__(quantiles=quantiles)
+    def __init__(self, quantiles: List[float]):
+        super().__init__(X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),quantiles=quantiles)
 
-    def set_params(self, input_dim: int):
+    def set_params(self, input_dim: int,external_features_diminsion: int):
         self.model = BootstrapConditionalErrorQuantile(quantiles=self.quantiles)
         return self
 
@@ -169,10 +184,11 @@ class MQBCE(MultiQuantileRegressor):
 class MQLP(MultiQuantileRegressor):
     """Multi Quantile linear program"""
 
-    def __init__(self, quantiles: list[float]):
-        super().__init__(quantiles=quantiles)
+    def __init__(self, quantiles: List[float]):
+        super().__init__(X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),quantiles=quantiles)
 
-    def set_params(self, input_dim: int):
+    def set_params(self, input_dim: int,external_features_diminsion: int):
         self.model = MultiQuantileLinearProgram(quantiles=self.quantiles)
         return self
 
@@ -180,10 +196,11 @@ class MQLP(MultiQuantileRegressor):
 class MQKNNR(MultiQuantileRegressor):
     """Quantile K-Nearst Neighbor Regression from sklearn-quantile"""
 
-    def __init__(self, quantiles: list[float]):
-        super().__init__(quantiles=quantiles)
+    def __init__(self, quantiles: List[float]):
+        super().__init__(X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),quantiles=quantiles)
 
-    def set_params(self, input_dim: int):
+    def set_params(self, input_dim: int,external_features_diminsion: int):
         self.model = KNeighborsQuantileRegressor(n_neighbors=20, q=self.quantiles)
         return self
 
@@ -191,56 +208,61 @@ class MQKNNR(MultiQuantileRegressor):
 class MQRFR(MultiQuantileRegressor):
     """Quantile Random Forest regression from sklearn-quantile"""
 
-    def __init__(self, quantiles: list[float]):
-        super().__init__(quantiles=quantiles)
+    def __init__(self, quantiles: List[float]):
+        super().__init__(X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),quantiles=quantiles)
 
-    def set_params(self, input_dim: int):
-        self.model = RandomForestQuantileRegressor(n_estimators=100, q=self.quantiles)
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        self.model = RandomForestQuantileRegressor(n_estimators=100, q=self.quantiles, random_state=42)
         return self
 
 
 class MQSRFR(MultiQuantileRegressor):
     """Quantile Sample Random Forest regression from sklearn-quantile"""
 
-    def __init__(self, quantiles: list[float]):
-        super().__init__(quantiles=quantiles)
+    def __init__(self, quantiles: List[float]):
+        super().__init__(X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),quantiles=quantiles)
 
-    def set_params(self, input_dim: int):
-        self.model = SampleRandomForestQuantileRegressor(n_estimators=100, q=self.quantiles)
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        self.model = SampleRandomForestQuantileRegressor(n_estimators=100, q=self.quantiles, random_state=42)
         return self
 
 
 class MQERT(MultiQuantileRegressor):
     """Quantile Extremely Random Trees regression from sklearn-quantile"""
 
-    def __init__(self, quantiles: list[float]):
-        super().__init__(quantiles=quantiles)
+    def __init__(self, quantiles: List[float]):
+        super().__init__(X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),quantiles=quantiles)
 
-    def set_params(self, input_dim: int):
-        self.model = ExtraTreesQuantileRegressor(n_estimators=100, q=self.quantiles)
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        self.model = ExtraTreesQuantileRegressor(n_estimators=100, q=self.quantiles,random_state=42)
         return self
 
 
 class MQSERT(MultiQuantileRegressor):
     """Quantile Sample Extremely Random Trees regression from sklearn-quantile"""
 
-    def __init__(self, quantiles: list[float]):
-        super().__init__(quantiles=quantiles)
+    def __init__(self, quantiles: List[float]):
+        super().__init__(X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),quantiles=quantiles)
 
-    def set_params(self, input_dim: int):
-        self.model = SampleExtraTreesQuantileRegressor(n_estimators=100, q=self.quantiles)
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        self.model = SampleExtraTreesQuantileRegressor(n_estimators=100, q=self.quantiles, random_state=42)
         return self
 
 
 class MQFFNN(MultiQuantileRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         super().__init__(
-            scaler=StandardScaler(),
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
             quantiles=quantiles)
 
-    def set_params(self, input_dim: int):
+    def set_params(self, input_dim: int, external_features_diminsion: int):
         self.model = models.pytorch.PytorchRegressor(
             model=models.pytorch.FeedForwardNeuralNetwork(input_dim, n_output=len(self.quantiles)),
             loss_function=pytorchtools.PinballLoss(self.quantiles))
@@ -250,14 +272,16 @@ class MQFFNN(MultiQuantileRegressor):
 class MQLSTM(MultiQuantileRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         super().__init__(
-            scaler=StandardScaler(),
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
             quantiles=quantiles)
 
-    def set_params(self, input_dim: int):
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        input_dim = 1
         self.model = models.pytorch.PytorchRegressor(
-            model=models.pytorch.LongShortTermMemory(input_dim, n_output=len(self.quantiles)),
+            model=models.pytorch.LongShortTermMemory(input_dim, external_features_diminsion,n_output=len(self.quantiles)),
             loss_function=pytorchtools.PinballLoss(self.quantiles))
         return self
 
@@ -265,13 +289,231 @@ class MQLSTM(MultiQuantileRegressor):
 class MQCNN(MultiQuantileRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         super().__init__(
-            scaler=StandardScaler(),
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
             quantiles=quantiles)
 
-    def set_params(self, input_dim: int):
+    def set_params(self, input_dim: int,external_features_diminsion: int):
         self.model = models.pytorch.PytorchRegressor(
             model=models.pytorch.ConvolutionalNeuralNetwork(input_dim, n_output=len(self.quantiles)),
             loss_function=pytorchtools.PinballLoss(self.quantiles))
         return self
+    
+
+
+class MQTransformer(MultiQuantileRegressor):
+    """Feedforward neural network optimizing quantile loss from pytorch"""
+
+    def __init__(self, quantiles: List[float]):
+        super().__init__(
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
+            quantiles=quantiles)
+
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        input_dim = 1
+        self.model = models.pytorch.PytorchRegressor(
+            model=models.pytorch.TransformerTS(input_dim,external_features_diminsion, n_output=len(self.quantiles)),
+            loss_function=pytorchtools.PinballLoss(self.quantiles))
+        return self
+    
+
+class MQLSTN(MultiQuantileRegressor):
+    """Feedforward neural network optimizing quantile loss from pytorch"""
+
+    def __init__(self, quantiles: List[float]):
+        super().__init__(
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
+            quantiles=quantiles)
+
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        input_dim = 1
+        self.model = models.pytorch.PytorchRegressor(
+            model=models.pytorch.LSTN(input_dim,external_features_diminsion, n_output=len(self.quantiles)),
+            loss_function=pytorchtools.PinballLoss(self.quantiles))
+        return self
+
+
+class MQWaveNet(MultiQuantileRegressor):
+    """Feedforward neural network optimizing quantile loss from pytorch"""
+
+    def __init__(self, quantiles: List[float]):
+        super().__init__(
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
+            quantiles=quantiles)
+
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        input_dim = 1
+        self.model = models.pytorch.PytorchRegressor(
+            model=models.pytorch.WaveNet(input_dim, external_features_diminsion,n_output=len(self.quantiles)),
+            loss_function=pytorchtools.PinballLoss(self.quantiles))
+        return self
+    
+
+class MQNBEATS(MultiQuantileRegressor):
+    """Feedforward neural network optimizing quantile loss from pytorch"""
+
+    def __init__(self, quantiles: List[float]):
+        super().__init__(
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
+            quantiles=quantiles)
+
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        input_dim = 1
+        self.model = models.pytorch.PytorchRegressor(
+            model=models.pytorch.NBeatsNet(input_dim, external_features_diminsion,n_output=len(self.quantiles)),
+            loss_function=pytorchtools.PinballLoss(self.quantiles))
+        return self
+    
+
+
+
+
+
+####################Point Forecasting Method###########################
+
+class PointRegressor(ABC):
+    """Class representing a regressor with optional scaler"""
+
+    def __init__(self,  X_scaler: Optional[Any] = None, y_scaler: Optional[Any] = None, model: Optional[Any] = None, loss_function:Optional[Any] = None):
+        self.X_scaler = X_scaler
+        self.y_scaler = y_scaler
+        self.model = model
+        self.name = self.__class__.__name__
+        self.loss_function = loss_function
+
+    @abstractmethod
+    def set_params(self, input_dim: int) -> "PointRegressor":
+        """Set parameters for inference
+        Parameters
+        ----------
+        input_dim
+            input dimension of data
+        Returns
+        -------
+        self
+        """
+
+class FFNN(PointRegressor):
+    """Feedforward neural network optimizing quantile loss from pytorch"""
+
+    def __init__(self,loss_function = pytorchtools.MSE()):
+        super().__init__(
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
+            loss_function = loss_function)
+
+    def set_params(self, input_dim: int, external_features_diminsion: int):
+        self.model = models.pytorch.PytorchRegressor(
+            model=models.pytorch.FeedForwardNeuralNetwork(input_dim, n_output=1),
+            loss_function=self.loss_function)
+        return self
+
+
+class LSTM(PointRegressor):
+    """Feedforward neural network optimizing quantile loss from pytorch"""
+
+    def __init__(self,loss_function = pytorchtools.MSE()):
+        super().__init__(
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
+            loss_function = loss_function)
+
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        input_dim = 1
+        self.model = models.pytorch.PytorchRegressor(
+            model=models.pytorch.LongShortTermMemory(input_dim, external_features_diminsion,n_output=1),
+            loss_function=self.loss_function)
+        return self
+
+
+class CNN(PointRegressor):
+    """Feedforward neural network optimizing quantile loss from pytorch"""
+
+    def __init__(self,loss_function = pytorchtools.MSE()):
+        super().__init__(
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
+            loss_function = loss_function)
+
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        self.model = models.pytorch.PytorchRegressor(
+            model=models.pytorch.ConvolutionalNeuralNetwork(input_dim, n_output=1),
+            loss_function=self.loss_function)
+        return self
+    
+
+
+class Transformer(PointRegressor):
+    """Feedforward neural network optimizing quantile loss from pytorch"""
+
+    def __init__(self,loss_function = pytorchtools.MSE()):
+        super().__init__(
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
+            loss_function = loss_function)
+
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        input_dim = 1
+        self.model = models.pytorch.PytorchRegressor(
+            model=models.pytorch.TransformerTS(input_dim,external_features_diminsion, n_output=1),
+            loss_function=self.loss_function)
+        return self
+    
+
+class LSTN(PointRegressor):
+    """Feedforward neural network optimizing quantile loss from pytorch"""
+
+    def __init__(self,loss_function = pytorchtools.MSE()):
+        super().__init__(
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
+            loss_function = loss_function)
+
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        input_dim = 1
+        self.model = models.pytorch.PytorchRegressor(
+            model=models.pytorch.LSTN(input_dim,external_features_diminsion, n_output=1),
+            loss_function=self.loss_function)
+        return self
+
+
+class WaveNet(PointRegressor):
+    """Feedforward neural network optimizing quantile loss from pytorch"""
+
+    def __init__(self,loss_function = pytorchtools.MSE()):
+        super().__init__(
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
+            loss_function = loss_function)
+
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        input_dim = 1
+        self.model = models.pytorch.PytorchRegressor(
+            model=models.pytorch.WaveNet(input_dim, external_features_diminsion,n_output=1),
+            loss_function=self.loss_function)
+        return self
+    
+
+class NBEATS(PointRegressor):
+    """Feedforward neural network optimizing quantile loss from pytorch"""
+
+    def __init__(self,loss_function = pytorchtools.MSE()):
+        super().__init__(
+            X_scaler=StandardScaler(),
+            y_scaler=StandardScaler(),
+            loss_function = loss_function)
+
+    def set_params(self, input_dim: int,external_features_diminsion: int):
+        input_dim = 1
+        self.model = models.pytorch.PytorchRegressor(
+            model=models.pytorch.NBeatsNet(input_dim, external_features_diminsion,n_output=1),
+            loss_function=self.loss_function)
+        return self
+
+

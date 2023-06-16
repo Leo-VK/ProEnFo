@@ -7,10 +7,12 @@ import plotly.graph_objects as go
 
 from preprocessing.quantile_format import split_prediction_interval_symmetrically
 
+from typing import List
+
 
 def plot_quantiles(y_pred: pd.DataFrame,
                    y_real: pd.Series = None,
-                   quantiles: list[float] = None,
+                   quantiles: List[float] = None,
                    y_axis_label: str = None):
     """Plot each quantile with matplotlib"""
     if quantiles is None:
@@ -31,7 +33,7 @@ def plot_quantiles(y_pred: pd.DataFrame,
 
 def plot_prediction_intervals(y_pred: pd.DataFrame,
                               y_real: pd.Series = None,
-                              quantiles: list[float] = None,
+                              quantiles: List[float] = None,
                               plot_median: bool = False,
                               y_axis_label: str = None):
     """Plot symmetric prediction intervals with matplotlib"""
@@ -68,7 +70,7 @@ def plot_prediction_intervals(y_pred: pd.DataFrame,
 
 def plot_quantiles_interactive(y_pred: pd.DataFrame,
                                y_real: pd.Series = None,
-                               quantiles: list[float] = None,
+                               quantiles: List[float] = None,
                                y_axis_label: str = None):
     """Plot each quantile with plotly"""
     if quantiles is None:
@@ -85,7 +87,7 @@ def plot_quantiles_interactive(y_pred: pd.DataFrame,
 
 def plot_prediction_intervals_interactive(y_pred: pd.DataFrame,
                                           y_real: pd.Series = None,
-                                          quantiles: list[float] = None,
+                                          quantiles: List[float] = None,
                                           plot_median: bool = False,
                                           y_axis_label: str = None):
     """Plot symmetric prediction intervals with plotly"""

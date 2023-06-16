@@ -1,8 +1,10 @@
 import pandas as pd
 from pandas import Series
 
+from typing import List, Tuple
 
-def check_quantile_list(quantiles: list[float]) -> list[float]:
+
+def check_quantile_list(quantiles: List[float]) -> List[float]:
     """Checks quantile list for monotonicity and value range"""
     if not all(i < j for i, j in zip(quantiles, quantiles[1:])):
         raise ValueError("Quantiles are not in ascending order")
@@ -13,7 +15,7 @@ def check_quantile_list(quantiles: list[float]) -> list[float]:
     return quantiles
 
 
-def check_prediction_interval(prediction_interval: list[float]) -> list[float]:
+def check_prediction_interval(prediction_interval: List[float]) -> List[float]:
     """Checks quantile list for monotonicity and value range"""
     if not len(prediction_interval) == 2:
         raise ValueError("Prediction interval has not length 2")
@@ -24,7 +26,7 @@ def check_prediction_interval(prediction_interval: list[float]) -> list[float]:
     return prediction_interval
 
 
-def split_prediction_interval_symmetrically(lower_bounds: pd.Series, upper_bounds: pd.Series) -> tuple[Series, Series]:
+def split_prediction_interval_symmetrically(lower_bounds: pd.Series, upper_bounds: pd.Series) -> Tuple[Series, Series]:
     """Checks symmetric of prediction intervals given"""
     if not lower_bounds.is_monotonic_increasing or not upper_bounds.is_monotonic_increasing:
         raise ValueError("Prediction interval is not monotonic")

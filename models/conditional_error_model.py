@@ -3,10 +3,11 @@ from typing import Any, Optional
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.linear_model import LinearRegression
+from typing import List,Tuple,Dict
 
 
 class ConditionalErrorQuantile(BaseEstimator, RegressorMixin):
-    def __init__(self, model: Any = None, quantiles: Optional[list[float]] = None):
+    def __init__(self, model: Any = None, quantiles: Optional[List[float]] = None):
         self.model = LinearRegression() if model is None else model
         self.quantiles = quantiles
         self.quantile_levels: np.ndarray
@@ -29,7 +30,7 @@ class BootstrapConditionalErrorQuantile(BaseEstimator, RegressorMixin):
                  model: Any = None,
                  sample_rounds: int = 3,
                  adjusted: bool = False,
-                 quantiles: Optional[list[float]] = None):
+                 quantiles: Optional[List[float]] = None):
         self.model = LinearRegression() if model is None else model
         self.quantiles = quantiles
         self.sample_rounds = sample_rounds  # recommended by authors is np.sqrt(n).astype(int)

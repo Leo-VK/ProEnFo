@@ -10,6 +10,110 @@ from preprocessing.quantile_format import check_prediction_interval, split_predi
     check_quantile_list
 from utils.simulation import SwingingDoorCompression
 
+from typing import List, Tuple
+
+
+
+
+########################################
+# Scores for Point Forecasting
+########################################
+
+
+class PointErrorMetric(ABC):
+    """Class representing a point forecast error metric"""
+    def calculate_mean_error(self,
+                            y_true: pd.Series,
+                            y_pred: pd.DataFrame,
+                            weights: Optional[pd.Series] = None) -> Union[float, pd.Series]:
+        """Calculate mean error over time axis"""
+
+class MAPE(PointErrorMetric):
+
+
+    def calculate_instant_error(self,
+                            y_true: pd.Series,
+                            y_pred: pd.DataFrame,
+                            ) -> Union[float, pd.Series]:
+        return np.abs((y_pred-y_true)/(y_true))
+
+    def calculate_mean_error(self,
+                            y_true: pd.Series,
+                            y_pred: pd.DataFrame,
+                            ) -> Union[float, pd.Series]:
+        
+        return np.mean(self.calculate_instant_error(y_true,y_pred))
+    
+
+class MAE(PointErrorMetric):
+
+    def calculate_instant_error(self,
+                            y_true: pd.Series,
+                            y_pred: pd.DataFrame,
+                            ) -> Union[float, pd.Series]:
+        
+        return np.abs((y_pred-y_true))
+    
+    def calculate_mean_error(self,
+                            y_true: pd.Series,
+                            y_pred: pd.DataFrame,
+                            ) -> Union[float, pd.Series]:
+        
+        return np.mean(self.calculate_instant_error(y_true,y_pred))
+    
+
+
+class RMSE(PointErrorMetric):
+    
+    def calculate_mean_error(self,
+                            y_true: pd.Series,
+                            y_pred: pd.DataFrame,
+                            ) -> Union[float, pd.Series]:
+        
+        return np.sqrt(np.mean(np.power(y_pred-y_true,2)))
+    
+
+class sMAPE(PointErrorMetric):
+
+    def calculate_instant_error(self,
+                            y_true: pd.Series,
+                            y_pred: pd.DataFrame,
+                            ) -> Union[float, pd.Series]:
+        
+        return 2*np.abs((y_pred-y_true)/(np.abs(y_true)+np.abs(y_pred)))
+    
+    def calculate_mean_error(self,
+                            y_true: pd.Series,
+                            y_pred: pd.DataFrame,
+                            ) -> Union[float, pd.Series]:
+        
+        return np.mean(self.calculate_instant_error(y_true,y_pred))
+    
+
+class MASE(PointErrorMetric):
+
+    def calculate_mean_error(self,
+                            y_true: pd.Series,
+                            y_pred: pd.DataFrame,
+                            ) -> Union[float, pd.Series]:
+        n = len(y_true)
+        mase_numerator = np.mean(np.abs(y_pred - y_true))
+        mase_denominator = np.mean(np.abs(np.array(y_true[1:]) - np.array(y_true[:-1])))
+        mase = mase_numerator / mase_denominator
+        return mase
+        
+
+
+
+
+
+
+
+########################################
+# Scores for Probabilistic Forecasting(part)
+########################################
+
+
 
 class ErrorMetric(ABC):
     """Class representing a forecast error metric"""
@@ -39,7 +143,7 @@ class ErrorMetric(ABC):
 class AbsoluteError(ErrorMetric):
     """Absolute error"""
 
-    def calculate_instant_error(self, y_true: pd.Series, y_pred: pd.Series) -> pd.Series:
+    def calculate_instant_error(self, y_true: pd.Series, y_pred: pd.DataFrame) -> pd.Series:
         return y_pred.subtract(y_true).abs()
 
 
@@ -100,6 +204,44 @@ class RampScore(ErrorMetric):
         all_slopes.iloc[0] = np.nan  # first slope is undefined
         return all_slopes.fillna(self.fill_value)  # fill undefined slopes at beginning and end
 
+class Consistent_quantile(ErrorMetric):
+    """Extreme_quantile metric
+       This only 
+    """
+    def __init__(self, threshold: float, fill_value: float = 0, use_datetime: bool = False, normalize: bool = False):
+        self.threshold = threshold
+        self.fill_value = fill_value
+        self.use_datetime = use_datetime
+        self.normalize = normalize
+
+    def calculate_instant_error(self, y_true: pd.Series, y_pred: pd.Series) -> pd.Series:
+        if self.normalize and (y_true.max() - y_true.min()) == 0:
+            raise ValueError("Division by zero during scaling")
+        y_true_norm = (y_true - y_true.min()) / (y_true.max() - y_true.min()) if self.normalize else y_true
+        y_pred_norm = (y_pred - y_true.min()) / (y_true.max() - y_true.min()) if self.normalize else y_pred
+        compressor = SwingingDoorCompression(self.threshold, self.use_datetime)
+        slope_true = self._extract_slopes(compressor.compress(y_true_norm))
+        slope_pred = self._extract_slopes(compressor.compress(y_pred_norm))
+        return slope_true.subtract(slope_pred).abs()
+
+    def _extract_slopes(self, series: pd.Series):
+        valid_series = series[~series.isna()]
+        denominator = valid_series.index.to_series().diff()
+        if isinstance(denominator.index, pd.DatetimeIndex):
+            if self.use_datetime:
+                denominator = denominator.dt.total_seconds()
+            else:
+                denominator = pd.Series(np.arange(len(series)), index=series.index)[~series.isna()].diff()
+        valid_slopes = valid_series.diff() / denominator
+        all_slopes = valid_slopes.reindex(series.index)  # fill missing indices
+        all_slopes = all_slopes.bfill()  # propagate slopes
+        all_slopes.iloc[0] = np.nan  # first slope is undefined
+        return all_slopes.fillna(self.fill_value)  # fill undefined slopes at beginning and end
+
+
+
+
+
 
 ########################################
 # Scores for Probabilistic Forecasting
@@ -108,7 +250,7 @@ class PinballLoss(ErrorMetric):
     """Pinball loss, also known as check score or quantile loss. This is a proper scoring rule"""
 
     def __init__(self,
-                 quantiles: list[float],
+                 quantiles: List[float],
                  weights: Optional[pd.Series] = None):
         self.quantiles = check_quantile_list(quantiles)
         self.weights = weights if weights is not None else uniform_quantile_weighting(quantiles)
@@ -232,7 +374,7 @@ class ContinuousRankedProbabilityScore(ErrorMetric):
 class QuantileCrossing(ErrorMetric):
     """Quantile crossing metric measuring the length of overcrossing quantiles"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         self.quantiles = check_quantile_list(quantiles)
 
     def calculate_instant_error(self, y_true: pd.Series, y_pred: pd.DataFrame) -> pd.Series:
@@ -268,7 +410,7 @@ class CalibrationError(ErrorMetric):
     """Quantile error metric to measure calibration
      ("Beyond Pinball Loss: Quantile Methods for Calibrated Uncertainty Quantification", Y. Chung et al.)"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         self.quantiles = check_quantile_list(quantiles)
 
     def calculate_instant_error(self, y_true: pd.Series, y_pred: pd.DataFrame) -> pd.Series:
@@ -303,7 +445,7 @@ class RampScoreMatrix(ErrorMetric):
 class ReliabilityMatrix(ErrorMetric):
     """Prediction interval coverage for symmetric prediction intervals. This can be used for a reliability diagram"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         self.quantiles = check_quantile_list(quantiles)
 
     def calculate_instant_error(self, y_true: pd.Series, y_pred: pd.DataFrame) -> pd.DataFrame:
@@ -321,7 +463,7 @@ class ReliabilityMatrix(ErrorMetric):
 class WinklerScoreMatrix(ErrorMetric):
     """Winkler score for symmetric prediction intervals. This can be plotted for a more comprehensive evaluation"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         self.quantiles = check_quantile_list(quantiles)
 
     def calculate_instant_error(self, y_true: pd.Series, y_pred: pd.DataFrame) -> pd.DataFrame:
@@ -339,7 +481,7 @@ class WinklerScoreMatrix(ErrorMetric):
 class IntervalWidthMatrix(ErrorMetric):
     """Interval width for symmetric prediction intervals. This can be plotted for a more comprehensive evaluation"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         self.quantiles = check_quantile_list(quantiles)
 
     def calculate_instant_error(self, y_true: pd.Series, y_pred: pd.DataFrame) -> pd.DataFrame:
@@ -357,7 +499,7 @@ class IntervalWidthMatrix(ErrorMetric):
 class CalibrationMatrix(ErrorMetric):
     """Calibration for given quantiles. This can be plotted for a more comprehensive evaluation"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         self.quantiles = check_quantile_list(quantiles)
 
     def calculate_instant_error(self, y_true: pd.Series, y_pred: pd.DataFrame) -> pd.DataFrame:
@@ -367,7 +509,7 @@ class CalibrationMatrix(ErrorMetric):
 class QuantileCrossingMatrix(ErrorMetric):
     """Average quantile crossing lengths for each quantile. This can be plotted for a more comprehensive evaluation"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         self.quantiles = check_quantile_list(quantiles)
 
     def calculate_instant_error(self, y_true: pd.Series, y_pred: pd.DataFrame) -> pd.DataFrame:
@@ -380,7 +522,7 @@ class QuantileCrossingMatrix(ErrorMetric):
 class PinballLossMatrix(ErrorMetric):
     """Average Pinball loss for each quantile. This can be plotted for a more comprehensive evaluation"""
 
-    def __init__(self, quantiles: list[float]):
+    def __init__(self, quantiles: List[float]):
         self.quantiles = check_quantile_list(quantiles)
 
     def calculate_instant_error(self, y_true: pd.Series, y_pred: pd.DataFrame) -> pd.Series:
