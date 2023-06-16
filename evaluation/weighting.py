@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from typing import List, Tuple
 
 """
 Quantile weightings
@@ -7,26 +8,26 @@ Quantile weightings
 """
 
 
-def uniform_quantile_weighting(quantiles: list[float]) -> pd.Series:
+def uniform_quantile_weighting(quantiles: List[float]) -> pd.Series:
     return pd.Series(1, index=quantiles)
 
 
-def center_quantile_weighting(quantiles: list[float]) -> pd.Series:
+def center_quantile_weighting(quantiles: List[float]) -> pd.Series:
     q = pd.Series(quantiles, index=quantiles)
     return q * (1 - q)
 
 
-def left_tail_quantile_weighting(quantiles: list[float]) -> pd.Series:
+def left_tail_quantile_weighting(quantiles: List[float]) -> pd.Series:
     q = pd.Series(quantiles, index=quantiles)
     return (1 - q) ** 2
 
 
-def right_tail_quantile_weighting(quantiles: list[float]) -> pd.Series:
+def right_tail_quantile_weighting(quantiles: List[float]) -> pd.Series:
     q = pd.Series(quantiles, index=quantiles)
     return q ** 2
 
 
-def two_tailed_quantile_weighting(quantiles: list[float]) -> pd.Series:
+def two_tailed_quantile_weighting(quantiles: List[float]) -> pd.Series:
     q = pd.Series(quantiles, index=quantiles)
     return (2 * q - 1) ** 2
 

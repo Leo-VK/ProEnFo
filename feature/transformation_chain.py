@@ -3,10 +3,12 @@ import pandas as pd
 from feature.feature_transformation import FeatureTransformationStrategy
 from feature.time_stationarization import TimeStationarizationStrategy
 
+from typing import Tuple
+
 
 def apply_transformations_if_requested(data: pd.DataFrame,
-                                       strategies: tuple[FeatureTransformationStrategy,
-                                                         TimeStationarizationStrategy]) -> tuple[pd.DataFrame, pd.DataFrame]:
+                                       strategies: Tuple[FeatureTransformationStrategy,
+                                                         TimeStationarizationStrategy]) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Applies feature transformations and stationarizations to original features for downstream processes if requested.
     Otherwise, it will only be used for feature selection"""
     transformed_data = data.copy()
@@ -27,7 +29,7 @@ def apply_transformations_if_requested(data: pd.DataFrame,
 
 def invert_transformations_if_requested(data: pd.DataFrame,
                                         target: str,
-                                        strategies: tuple[FeatureTransformationStrategy,
+                                        strategies: Tuple[FeatureTransformationStrategy,
                                                           TimeStationarizationStrategy]) -> pd.DataFrame:
     """Applies inverted functions of feature transformations and stationarizations to forecast"""
     transformed_data = data.to_dict('series')

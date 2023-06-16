@@ -1,6 +1,7 @@
 import warnings
 
 import pandas as pd
+from typing import List,Dict
 
 
 def rename_lag_series(column: pd.Series, lag: int):
@@ -9,7 +10,7 @@ def rename_lag_series(column: pd.Series, lag: int):
     return column
 
 
-def lag_target(data: pd.DataFrame, target: str, time_lags: list[int]) -> pd.DataFrame:
+def lag_target(data: pd.DataFrame, target: str, time_lags: List[int]) -> pd.DataFrame:
     """Lag a target column of dataframe for given lag list"""
     if 0 in time_lags:
         raise ValueError('A zero time lag is given')
@@ -23,8 +24,8 @@ def lag_target(data: pd.DataFrame, target: str, time_lags: list[int]) -> pd.Data
 
 def remove_lag_interval(data: pd.DataFrame,
                         horizon: int,
-                        target_lags: list[int],
-                        external_lags_by_name: dict[str, list[int]]) -> pd.DataFrame:
+                        target_lags: List[int],
+                        external_lags_by_name: Dict[str, List[int]]) -> pd.DataFrame:
     """Remove NaN intervals introduced by lagging of columns"""
     target_time_drop = max(target_lags) if target_lags else horizon
 

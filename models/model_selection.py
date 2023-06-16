@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Tuple
 
 
 class TrainTestSplit:
@@ -6,7 +7,7 @@ class TrainTestSplit:
     def __init__(self, test_ratio=0.2):
         self.test_ratio = test_ratio
 
-    def split(self, X, y=None, groups=None) -> tuple[np.ndarray, np.ndarray]:
+    def split(self, X, y=None, groups=None) -> Tuple[np.ndarray, np.ndarray]:
         n_samples = X.shape[0]
         n_test = np.ceil(self.test_ratio * n_samples)
         n_train = int(n_samples - n_test)

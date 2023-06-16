@@ -3,6 +3,10 @@ from typing import Literal, Union
 
 import pandas as pd
 
+from typing import List, Dict
+
+import matplotlib.pyplot as plt
+
 
 def set_datetimeindex(data: pd.DataFrame,
                       datetime_resolution: datetime.timedelta,
@@ -51,7 +55,7 @@ def fill_missing_datetime(data: pd.DataFrame,
     return pd.concat([data, missing_df])
 
 
-def check_data_feature_alignment(data: pd.DataFrame, target: str, external_names: list[str]) -> bool:
+def check_data_feature_alignment(data: pd.DataFrame, target: str, external_names: List[str]) -> bool:
     column_names = data.columns.tolist()
     if target not in column_names:
         raise KeyError(f"Target {target} is not present in data")
