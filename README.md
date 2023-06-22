@@ -9,7 +9,7 @@ The datasets and their forecasting results in this archive can be found at https
 To reproduce the results in our archive, users can refer to the process in the main.py file. By selecting different Feature engineering methods and preprocessing, post-processing, and training models, users can easily construct different prediction models.
 
 ## Dataset
-	Dataset	No. of series	Length	Resolution	Load type	External variables
+Dataset	No. of series	Length	Resolution	Load type	External variables
 1	Covid19	1	31912	hourly	aggregated	airTemperature,
 Humidity, etc
 2	GEF12	20	39414	hourly	aggregated	airTemperature
