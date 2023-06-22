@@ -1336,5 +1336,5 @@ conda env create --file proenfo_env.yml
 We include several metrics to evaluate the forecasting performance, here is a visualization example. For details, you can check it in ./evaluation/metrics.py
 
 
-![contents](blob:https://github.com/ab1d1450-e9c3-4d4a-b8d5-6f1f17073346)
+![contents](https://github.com/Leo-VK/ProEnFo/tree/main/figure/CT.pdf)
 
