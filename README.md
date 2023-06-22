@@ -1338,6 +1338,6 @@ We include several metrics to evaluate the forecasting performance, here is a vi
 
 ![contents](https://github.com/Leo-VK/ProEnFo/tree/main/figure/CT.png)
 
-![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/tree/main/figure/CT.png)
 
+![contents](https://github.com/Leo-VK/ProEnFo/tree/master/figure/CT.png)
 
