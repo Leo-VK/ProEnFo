@@ -228,8 +228,8 @@ for category in categories:
 ## How to add your own forecasting method into the framework
 Based on Pytorch, users can simply add their own defined deep learning network to our forecasting framework.
 Firstly, users need to define the initialization method for the model in ./models/model_init.py
-'''python
-class MYQuantile_model(MultiQuantileRegressor):
+```python
+class MYQuantile_Regressor(MultiQuantileRegressor):
     def __init__(self, quantiles: List[float]):
         super().__init__(
             X_scaler=StandardScaler(),
@@ -241,7 +241,21 @@ class MYQuantile_model(MultiQuantileRegressor):
             model=models.pytorch.model(input_dim,external_features_diminsion, n_output=len(self.quantiles)),
             loss_function=pytorchtools.PinballLoss(self.quantiles))
         return self
-'''
+```
+Secondly, users need to add the structure of the model in ./models/pytorch.py
+```python
+class MYQuantile_Model(nn.Module):
+    def __init__(self,input_parameters):
+        super(MYQuantile_Model, self).__init__()
+        '''
+        build your model here
+        '''
+    def forward(self, X_batch,X_batch_ex):
+        '''
+        input the data into the model, here X_batch is the sequence data while X_batch_ex is the external variable.
+        '''
+        return self.seq(concat_feature)
+```
 
 ## Forecasting evaluation
 We include several metrics to evaluate the forecasting performance and summarize them below. For details, users can check it in [./evaluation/metrics.py](https://github.com/Leo-VK/ProEnFo/blob/main/evaluation/metrics.py)
