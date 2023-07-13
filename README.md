@@ -245,6 +245,9 @@ We include several metrics to evaluate the forecasting performance. Firstly, we 
 | 12 |        MAPE        |          a         |    point    |                                     calculates the average percentage of forecasting error for all data points                                     |
 | 13 |         MAE        |          a         |    point    |                               calculates the average of the absolute value of forecasting errors for all data points                               |
 | 14 |        MASE        |          a         |    point    |         calculates errors by comparing the forecasting error with the average absolute first-order difference of the actual value sequence         |
-| 15 |        RMSE        |          a         |    point    |                                calculates the square root of the average of the sum of squares of forecasting errors                               |
+| 15 |        RMSE        |          a         |    point    |                                calculates the square root of the average of the sum of squares of forecasting errors 
+
+
+|
 ![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/CT.png)
 
