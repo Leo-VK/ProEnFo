@@ -1337,7 +1337,6 @@ Our package covers the entire process of constructing forecasting models, includ
 ![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/package.jpg)
 ## Quick Start
 \`\`\`python
-# Your Python code goes here
 print("Hello, World!")
 \`\`\`
 ## How to add your own framework
