@@ -245,7 +245,7 @@ We include several metrics to evaluate the forecasting performance. Firstly, we 
 | 12 |        MAPE        |          $$\text{MAPE} = \frac{1}{n} \sum_{t=1}^{n} \left| \frac{y_t - F_t}{y_t} \right| \times 100\%$$         |    point    |                                     calculates the average percentage of forecasting error for all data points                                     |
 | 13 |         MAE        |          $$\text{MASE} = \frac{1}{n} \sum_{t=1}^{n} \frac{\left| y_t - F_t \right|}{\frac{1}{n-1} \sum_{t=1}^{n} \left| y_{t} - y_{t-1} \right|}$$         |    point    |                               calculates the average of the absolute value of forecasting errors for all data points                               |
 | 14 |        MASE        |          $$\text{RMSE} = \sqrt{\frac{1}{n} \sum_{t=1}^{n} (y_t - F_t)^2}$$         |    point    |         calculates errors by comparing the forecasting error with the average absolute first-order difference of the actual value sequence         |
-| 15 |        RMSE        |          $$\text{MAE} = \frac{1}{n} \sum_{t=1}^{n} \left| y_t - F_t \right|$$         |    point    |                                calculates the square root of the average of the sum of squares of forecasting errors |
+| 15 |        RMSE        |          $$\text{MAE} = \frac{1}{n} \sum_{t=1}^{n} \left| y_t - F_t \right$$|         |    point    |                                calculates the square root of the average of the sum of squares of forecasting errors |
 
 
 
