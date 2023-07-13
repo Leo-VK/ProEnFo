@@ -1340,9 +1340,7 @@ To start forecasting, we first need to import some packages
 ```python
 import datetime as dt
 import os
-
 import pandas as pd
-
 import evaluation.metrics as em
 import feature.feature_lag_selection as fls
 import feature.feature_external_selection as fes
@@ -1365,18 +1363,13 @@ import ast
 ```
 Import the dataset, the example of the format of the dataset can be seen in ./data
 ```python
-###################
-### Import data ###
-###################
 site_id = 'GFC14_load'
 file_name = "load_with_weather.pkl"
 data = pd.read_pickle(f"data/{site_id}/{file_name}")
 target = 'load'
 ```
+Define your forecasting setting, eg, forecasting quantiles, and feature engineering strategy.
 ```python
-#######################################
-### Define your forecasting setting ###
-#######################################
 categories = data.columns.get_level_values(0) if target not in data.columns.get_level_values(0) else ["system"]
 quantiles = [round(k / 100, 2) for k in range(1, 100)]]
 # add forecasting methods
@@ -1398,13 +1391,14 @@ methods_to_train = [bi.BMQ(7, [round(k / 100, 2) for k in range(1, 100)]),
                 mi.MQTransformer([round(k / 100, 2) for k in range(1, 100)])]
 horizon_list = [24]  # or int(dt_resolution.seconds/data.index.freq.n)
 train_ratio = 0.8
-# define your feature engineering strategy
 feature_transformation = ft.NoTransformationStrategy()
 time_stationarization = ts.NoStationarizationStrategy()
 datetime_features = [tc.Hour(),tc.Month(),tc.Day(),tc.Weekday()]
 target_lag_selection = fls.ManualStrategy(lags=[24, 48, 72, 96, 120, 144, 168])
 external_feature_selection = fes.ZeroLagStrategy(["airTemperature"])
-# define your evaluation metrics
+```
+Define your evaluation metrics
+```python
 evaluation_metrics = [em.ReliabilityMatrix([round(k / 100, 2) for k in range(1, 100)]),
                     em.CalibrationMatrix([round(k / 100, 2) for k in range(1, 100)]),
                     em.WinklerScoreMatrix([round(k / 100, 2) for k in range(1, 100)]),
@@ -1422,7 +1416,9 @@ evaluation_metrics = [em.ReliabilityMatrix([round(k / 100, 2) for k in range(1, 
 post_processing_quantile = ppq.QuantileSortingStrategy()
 post_processing_value = ppv.ValueClippingStrategy(0, None)
 save_results = True
-# Train and Test process
+```
+Train and Test process
+```python
 for category in categories:
     for horizon in horizon_list:
         err_tot, forecast_tot,true = calculate_scenario(data=data if category == "system" else data[category],
