@@ -100,7 +100,7 @@ Our package covers the entire process of constructing forecasting models, includ
 | 15 |   Wavenet   |  [link](https://arxiv.org/abs/1609.03499) |   deep learning   |                          quantile regression based on Wavenet                         |
 | 16 |   N-BEATS   |  [link](https://arxiv.org/abs/1905.10437) |   deep learning   |                          quantile regression based on N-BEATS                         |
 ## Quick Start
-To start forecasting, we first need to import some packages
+To start forecasting, we first need to import some packages.
 ```python
 import datetime as dt
 import os
@@ -125,7 +125,7 @@ import warnings
 warnings.filterwarnings("ignore")
 import ast
 ```
-Import the dataset, the example of the format of the dataset can be seen in [./data](https://github.com/Leo-VK/ProEnFo/tree/main/data/GFC14_load)
+Import the dataset, the example of the format of the dataset can be seen in [./data](https://github.com/Leo-VK/ProEnFo/tree/main/data/GFC14_load). 
 ```python
 site_id = 'GFC14_load'
 file_name = "load_with_weather.pkl"
@@ -161,7 +161,7 @@ datetime_features = [tc.Hour(),tc.Month(),tc.Day(),tc.Weekday()]
 target_lag_selection = fls.ManualStrategy(lags=[24, 48, 72, 96, 120, 144, 168])
 external_feature_selection = fes.ZeroLagStrategy(["airTemperature"])
 ```
-Define your evaluation metrics
+Define your evaluation metrics.
 ```python
 evaluation_metrics = [em.ReliabilityMatrix([round(k / 100, 2) for k in range(1, 100)]),
                     em.CalibrationMatrix([round(k / 100, 2) for k in range(1, 100)]),
@@ -181,7 +181,7 @@ post_processing_quantile = ppq.QuantileSortingStrategy()
 post_processing_value = ppv.ValueClippingStrategy(0, None)
 save_results = True
 ```
-Train and Test process
+Now we can begin training the model and then inference. The forecasting result and the error result will be saved in the corresponding data file.
 ```python
 for category in categories:
     for horizon in horizon_list:
