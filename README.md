@@ -6,7 +6,7 @@ This is the code related to the paper
 ["Benchmarks and Custom Package for Electrical Load Forecasting"](https://openreview.net/forum?id=O61RXF9dvD&invitationId=NeurIPS.cc/2023/Track/Datasets_and_Benchmarks/Submission433/-/Supplementary_Material&referrer=%5BAuthor%20Console%5D(%2Fgroup%3Fid%3DNeurIPS.cc%2F2023%2FTrack%2FDatasets_and_Benchmarks%2FAuthors%23author-tasks)) submitted to Neurips 2023 Datasets and Benchmarks Track. 
 This repository mainly aims at implementing routines for probabilistic energy forecasting. However, we also provide the implementation of relevant point forecasting models.
 The datasets and their forecasting results in this archive can be found [here](https://connecthkuhk-my.sharepoint.com/:f:/g/personal/u3009646_connect_hku_hk/Euy4Rv8DsM1Cu1hJ85yHL18BNsDNbS5XiaVoCvl-l-07tQ?e=OFLF3A.).
-To reproduce the results in our archive, users can refer to the process in the main.py file. Users can easily construct different forecasting models by selecting different Feature engineering methods and preprocessing, post-processing, and training models.
+To reproduce the results in our archive, users can refer to the process in the [main.py file](https://github.com/Leo-VK/ProEnFo/tree/main/main.py). Users can easily construct different forecasting models by selecting different Feature engineering methods and preprocessing, post-processing, and training models.
 
 ## Dataset
 We include several different datasets in our load forecasting archive, which can be downloaded [here](https://connecthkuhk-my.sharepoint.com/:f:/g/personal/u3009646_connect_hku_hk/Euy4Rv8DsM1Cu1hJ85yHL18BNsDNbS5XiaVoCvl-l-07tQ?e=OFLF3A.). And there is the summary of them.
@@ -125,7 +125,7 @@ import warnings
 warnings.filterwarnings("ignore")
 import ast
 ```
-Import the dataset, the example of the format of the dataset can be seen in ./data
+Import the dataset, the example of the format of the dataset can be seen in [./data](https://github.com/Leo-VK/ProEnFo/tree/main/data/GFC14_load)
 ```python
 site_id = 'GFC14_load'
 file_name = "load_with_weather.pkl"
