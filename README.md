@@ -231,7 +231,7 @@ for category in categories:
 We include several metrics to evaluate the forecasting performance. Firstly, we summarize the evaluation metrics below. Secondly, we provide a visualization example. For details, users can check it in ./evaluation/metrics.py
 |    |       Metrics      | Calculation method | Metric type |                                                                     Description                                                                    |
 |:--:|:------------------:|:------------------:|:-----------:|:--------------------------------------------------------------------------------------------------------------------------------------------------:|
-|  1 | CoverageError (CE) |          a         |  probility  |    measures the difference between the proportion of actual observations falling within the forecasting interval and the expected coverage rate    |
+|  1 | CoverageError (CE) |          $$CE = \frac{1}{n} \sum_{t=1}^{n} (I(L_t \leq y_t \leq U_t) - (UB - LB))$$         |  probility  |    measures the difference between the proportion of actual observations falling within the forecasting interval and the expected coverage rate    |
 |  2 | Winkler Score (WS) |          a         |  probility  |         evaluates whether the forecasting interval accurately captures actual observations, taking into account the width of the interval.         |
 |  3 |  Pinball Loss (PL) |          a         |  probility  |             weights the error based on whether the forecasting value falls on the side of the actual observation value (above or below)            |
 |  4 |   RampScore (RS)   |          a         |  probility  |                                     measures the consistency of the slope (i.e. increasing or decreasing trend)                                    |
@@ -245,9 +245,9 @@ We include several metrics to evaluate the forecasting performance. Firstly, we 
 | 12 |        MAPE        |          a         |    point    |                                     calculates the average percentage of forecasting error for all data points                                     |
 | 13 |         MAE        |          a         |    point    |                               calculates the average of the absolute value of forecasting errors for all data points                               |
 | 14 |        MASE        |          a         |    point    |         calculates errors by comparing the forecasting error with the average absolute first-order difference of the actual value sequence         |
-| 15 |        RMSE        |          a         |    point    |                                calculates the square root of the average of the sum of squares of forecasting errors 
+| 15 |        RMSE        |          a         |    point    |                                calculates the square root of the average of the sum of squares of forecasting errors |
 
 
-|
+
 ![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/CT.png)
 
