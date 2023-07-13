@@ -88,17 +88,17 @@ Our package covers the entire process of constructing forecasting models, includ
 |  3 |     BCEP    |       | Non-deep learning | take the forecasting error obtained by the persistence method as quantile forecasting |
 |  4 |     QCE     |       | Non-deep learning |  take the forecasting error obtained by the linear regression as quantile forecasting |
 |  5 |     KNNR    |  [link](https://link.springer.com/book/10.1007/978-0-387-21606-5) | Non-deep learning |                    quantile regression based on K-nearest neighbor                    |
-|  6 |     RFR     |  link | Non-deep learning |                       quantile regression based on random forest                      |
-|  7 |     SRFR    |  link | Non-deep learning |                   quantile regression based on sample random forest                   |
-|  8 |     ERT     |  link | Non-deep learning |                    quantile regression based on extreme random tree                   |
-|  9 |     SERT    |  link | Non-deep learning |                quantile regression based on sample extreme random tree                |
-| 10 |     FFNN    |  link |   deep learning   |                quantile regression based on feed-forward neural network               |
-| 11 |     LSTM    |  link |   deep learning   |                           quantile regression based on LSTM                           |
-| 12 |     CNN     |  link |   deep learning   |                            quantile regression based on CNN                           |
-| 13 | Transformer |  link |   deep learning   |                        quantile regression based on Transformer                       |
-| 14 |    LSTNet   |  link |   deep learning   |                          quantile regression based on LSTNet                          |
-| 15 |   Wavenet   |  link |   deep learning   |                          quantile regression based on Wavenet                         |
-| 16 |   N-BEATS   |  link |   deep learning   |                          quantile regression based on N-BEATS                         |
+|  6 |     RFR     |  [link](https://www.jmlr.org/papers/volume7/meinshausen06a/meinshausen06a.pdf) | Non-deep learning |                       quantile regression based on random forest                      |
+|  7 |     SRFR    |  [link](https://www.jmlr.org/papers/volume7/meinshausen06a/meinshausen06a.pdf) | Non-deep learning |                   quantile regression based on sample random forest                   |
+|  8 |     ERT     |  [link](https://link.springer.com/article/10.1007/s10994-006-6226-1) | Non-deep learning |                    quantile regression based on extreme random tree                   |
+|  9 |     SERT    |  [link](https://link.springer.com/article/10.1007/s10994-006-6226-1) | Non-deep learning |                quantile regression based on sample extreme random tree                |
+| 10 |     FFNN    |  [link](https://ieeexplore.ieee.org/abstract/document/485891) |   deep learning   |                quantile regression based on feed-forward neural network               |
+| 11 |     LSTM    |  [link](https://ieeexplore.ieee.org/abstract/document/6795963) |   deep learning   |                           quantile regression based on LSTM                           |
+| 12 |     CNN     |  [link](https://ieeexplore.ieee.org/abstract/document/9451544) |   deep learning   |                            quantile regression based on CNN                           |
+| 13 | Transformer |  [link](https://proceedings.neurips.cc/paper_files/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html) |   deep learning   |                        quantile regression based on Transformer                       |
+| 14 |    LSTNet   |  [link](https://dl.acm.org/doi/abs/10.1145/3209978.3210006) |   deep learning   |                          quantile regression based on LSTNet                          |
+| 15 |   Wavenet   |  [link](https://arxiv.org/abs/1609.03499) |   deep learning   |                          quantile regression based on Wavenet                         |
+| 16 |   N-BEATS   |  [link](https://arxiv.org/abs/1905.10437) |   deep learning   |                          quantile regression based on N-BEATS                         |
 ## Quick Start
 To start forecasting, we first need to import some packages
 ```python
