@@ -228,7 +228,7 @@ for category in categories:
 ## How to add your own forecasting method into the framework
 
 ## Forecasting evaluation
-We include several metrics to evaluate the forecasting performance and summarize them below. For details, users can check it in [./evaluation/metrics.py]
+We include several metrics to evaluate the forecasting performance and summarize them below. For details, users can check it in [./evaluation/metrics.py](https://github.com/Leo-VK/ProEnFo/blob/main/evaluation/metrics.py)
 |    |       Metrics      | Calculation method | Metric type |                                                                     Description                                                                    |
 |:--:|:------------------:|:------------------:|:-----------:|:--------------------------------------------------------------------------------------------------------------------------------------------------:|
 |  1 | CoverageError (CE) |          $$CE = \frac{1}{n} \sum_{t=1}^{n} (I(L_t \leq y_t \leq U_t) - (UB - LB))$$         |  probility  |    measures the difference between the proportion of actual observations falling within the forecasting interval and the expected coverage rate    |
