@@ -1336,9 +1336,7 @@ conda env create --file proenfo_env.yml
 Our package covers the entire process of constructing forecasting models, including data preprocessing, construction of forecasting models, etc.
 ![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/package.jpg)
 ## Quick Start
-\`\`\`python
-print("Hello, World!")
-\`\`\`
+<script src="https://gist.github.com/phet1999/6b5f7b9964062c84601943273f01a0bc.js"></script>
 ## How to add your own framework
 
 ## Forecasting evaluation
