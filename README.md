@@ -232,14 +232,7 @@ We include several metrics to evaluate the forecasting performance. Firstly, we 
 |    |       Metrics      | Calculation method | Metric type |                                                                     Description                                                                    |
 |:--:|:------------------:|:------------------:|:-----------:|:--------------------------------------------------------------------------------------------------------------------------------------------------:|
 |  1 | CoverageError (CE) |          $$CE = \frac{1}{n} \sum_{t=1}^{n} (I(L_t \leq y_t \leq U_t) - (UB - LB))$$         |  probility  |    measures the difference between the proportion of actual observations falling within the forecasting interval and the expected coverage rate    |
-|  2 | Winkler Score (WS) |          $$
-W S_{a, t} =
-\begin{cases}
-  \delta, & L_t \leq y_t \leq U_t. \\
-  \delta + \frac{2\left(y_t - U_t\right)}{\alpha}, & y_t > U_t. \\
-  \delta + \frac{2\left(L_t - y_t\right)}{\alpha}, & y_t < L_t.
-\end{cases}
-$$         | probability |         evaluates whether the forecasting interval accurately captures actual observations, taking into account the width of the interval.         |
+|  2 | Winkler Score (WS) |        <div>$$W S_{a, t}= \begin{cases}\delta, & L_t \leq y_t \leq U_t. \ \delta+\frac{2\left(y_t-U_t\right)}{\alpha}, & y_t>U_t. \ \delta+\frac{2\left(L_t-y_t\right)}{\alpha}, & y_t<L_t.\end{cases}$$</div>        | probability |         evaluates whether the forecasting interval accurately captures actual observations, taking into account the width of the interval.         |
 |  3 |  Pinball Loss (PL) |          $$PL=\frac{1}{n_\tau \cdot n} \sum_{t=1}^n \sum_{i=1}^{n_\tau} L_\tau\left(\hat{y}_{\tau,t}, y_t\right)$$         |  probability  |             weights the error based on whether the forecasting value falls on the side of the actual observation value (above or below)            |
 |  4 |   RampScore (RS)   |          -         |  probability  |                                     measures the consistency of the slope (i.e. increasing or decreasing trend)                                    |
 |  5 |  CalibrationError  |          -         |  probability  |                                      evaluates the accuracy of forecasting models in representing uncertainty                                      |
