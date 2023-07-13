@@ -81,8 +81,8 @@ conda env create --file proenfo_env.yml
 Our package covers the entire process of constructing forecasting models, including data preprocessing, construction of forecasting models, etc.
 ![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/package.jpg)
 ## Available forecasting models 
-|    |    Models   | Paper | Type              |                                      Description                                      |
-|:--:|:-----------:|:-----:|-------------------|:-------------------------------------------------------------------------------------:|
+|    |    Models   | Paper |        Type       |                                      Description                                      |
+|:--:|:-----------:|:-----:|:-----------------:|:-------------------------------------------------------------------------------------:|
 |  1 |     BMQ     |       | Non-deep learning |           moving quantity method based on a fixed number of past time points          |
 |  2 |     BEQ     |       | Non-deep learning |                  moving quantity method based on all historical data                  |
 |  3 |     BCEP    |       | Non-deep learning | take the forecasting error obtained by the persistence method as quantile forecasting |
