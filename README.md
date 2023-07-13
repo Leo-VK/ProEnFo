@@ -1336,6 +1336,7 @@ conda env create --file proenfo_env.yml
 Our package covers the entire process of constructing forecasting models, including data preprocessing, construction of forecasting models, etc.
 ![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/package.jpg)
 ## Quick Start
+To start forecasting, we first need to import some packages
 ```python
 import datetime as dt
 import os
@@ -1361,8 +1362,9 @@ import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
 import ast
-
-
+```
+Import the dataset, the example of the format of the dataset can be seen in ./data
+```python
 ###################
 ### Import data ###
 ###################
@@ -1370,6 +1372,8 @@ site_id = 'GFC14_load'
 file_name = "load_with_weather.pkl"
 data = pd.read_pickle(f"data/{site_id}/{file_name}")
 target = 'load'
+```
+```python
 #######################################
 ### Define your forecasting setting ###
 #######################################
