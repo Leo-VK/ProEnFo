@@ -1339,7 +1339,5 @@ Our package covers the entire process of constructing forecasting models, includ
 
 ## Forecasting evaluation
 We include several metrics to evaluate the forecasting performance, here is a visualization example. For details, you can check it in ./evaluation/metrics.py
-
-
 ![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/CT.png)
 
