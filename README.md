@@ -1337,7 +1337,7 @@ Our package covers the entire process of constructing forecasting models, includ
 ![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/package.jpg)
 ## Quick Start
 
-## How to add your own forecasting into the framework
+## How to add your own forecasting method into the framework
 
 ## Forecasting evaluation
 We include several metrics to evaluate the forecasting performance, here is a visualization example. For details, you can check it in ./evaluation/metrics.py
