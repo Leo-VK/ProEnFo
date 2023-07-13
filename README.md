@@ -87,7 +87,7 @@ Our package covers the entire process of constructing forecasting models, includ
 |  2 |     BEQ     |       | Non-deep learning |                  moving quantity method based on all historical data                  |
 |  3 |     BCEP    |       | Non-deep learning | take the forecasting error obtained by the persistence method as quantile forecasting |
 |  4 |     QCE     |       | Non-deep learning |  take the forecasting error obtained by the linear regression as quantile forecasting |
-|  5 |     KNNR    |  link | Non-deep learning |                    quantile regression based on K-nearest neighbor                    |
+|  5 |     KNNR    |  [link](https://link.springer.com/book/10.1007/978-0-387-21606-5) | Non-deep learning |                    quantile regression based on K-nearest neighbor                    |
 |  6 |     RFR     |  link | Non-deep learning |                       quantile regression based on random forest                      |
 |  7 |     SRFR    |  link | Non-deep learning |                   quantile regression based on sample random forest                   |
 |  8 |     ERT     |  link | Non-deep learning |                    quantile regression based on extreme random tree                   |
