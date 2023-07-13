@@ -228,6 +228,23 @@ for category in categories:
 ## How to add your own forecasting method into the framework
 
 ## Forecasting evaluation
-We include several metrics to evaluate the forecasting performance, here is a visualization example. For details, you can check it in ./evaluation/metrics.py
+We include several metrics to evaluate the forecasting performance. Firstly, we summarize the evaluation metrics below. Secondly, we provide a visualization example. For details, users can check it in ./evaluation/metrics.py
+|    |       Metrics      | Calculation method | Metric type |                                                                     Description                                                                    |
+|:--:|:------------------:|:------------------:|:-----------:|:--------------------------------------------------------------------------------------------------------------------------------------------------:|
+|  1 | CoverageError (CE) |          a         |  probility  |    measures the difference between the proportion of actual observations falling within the forecasting interval and the expected coverage rate    |
+|  2 | Winkler Score (WS) |          a         |  probility  |         evaluates whether the forecasting interval accurately captures actual observations, taking into account the width of the interval.         |
+|  3 |  Pinball Loss (PL) |          a         |  probility  |             weights the error based on whether the forecasting value falls on the side of the actual observation value (above or below)            |
+|  4 |   RampScore (RS)   |          a         |  probility  |                                     measures the consistency of the slope (i.e. increasing or decreasing trend)                                    |
+|  5 |  CalibrationError  |          a         |  probility  |                                      evaluates the accuracy of forecasting models in representing uncertainty                                      |
+|  6 |    IntervalWidth   |          -         |  probility  |                                             calculates the width of probabilistic forecasting intervals                                            |
+|  7 |  QuantileCrossing  |          -         |  probility  | gives the ratio of any two quantiles in which the predicted value of the lower quantile is greater than the predicted value of the higher quantile |
+|  8 |  BoundaryCrossing  |          -         |  probility  |                                 calculates the probability that the true value falls outside the forecasting range                                 |
+|  9 |      Skewness      |          -         |  probility  |                                                  describes the shape of a probability distribution                                                 |
+| 10 |      Kurtosis      |          -         |  probility  |                                                  describes the shape of a probability distribution                                                 |
+| 11 | QuartileDispersion |          -         |  probility  |                                                 measures the statistical dispersion of distribution                                                |
+| 12 |        MAPE        |          a         |    point    |                                     calculates the average percentage of forecasting error for all data points                                     |
+| 13 |         MAE        |          a         |    point    |                               calculates the average of the absolute value of forecasting errors for all data points                               |
+| 14 |        MASE        |          a         |    point    |         calculates errors by comparing the forecasting error with the average absolute first-order difference of the actual value sequence         |
+| 15 |        RMSE        |          a         |    point    |                                calculates the square root of the average of the sum of squares of forecasting errors                               |
 ![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/CT.png)
 
