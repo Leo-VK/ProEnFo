@@ -228,7 +228,7 @@ for category in categories:
 ## How to add your own forecasting method into the framework
 
 ## Forecasting evaluation
-We include several metrics to evaluate the forecasting performance. Firstly, we summarize the evaluation metrics below. Secondly, we provide a visualization example. For details, users can check it in ./evaluation/metrics.py
+We include several metrics to evaluate the forecasting performance and summarize them below. For details, users can check it in [./evaluation/metrics.py]
 |    |       Metrics      | Calculation method | Metric type |                                                                     Description                                                                    |
 |:--:|:------------------:|:------------------:|:-----------:|:--------------------------------------------------------------------------------------------------------------------------------------------------:|
 |  1 | CoverageError (CE) |          $$CE = \frac{1}{n} \sum_{t=1}^{n} (I(L_t \leq y_t \leq U_t) - (UB - LB))$$         |  probility  |    measures the difference between the proportion of actual observations falling within the forecasting interval and the expected coverage rate    |
@@ -247,7 +247,7 @@ We include several metrics to evaluate the forecasting performance. Firstly, we 
 | 14 |        MASE        |          $$\text{RMSE} = \sqrt{\frac{1}{n} \sum_{t=1}^{n} (y_t - F_t)^2}$$         |    point    |         calculates errors by comparing the forecasting error with the average absolute first-order difference of the actual value sequence         |
 | 15 |        RMSE        |          $$\text{MAE} = \frac{1}{n} \sum_{t=1}^{n} \left\| y_t - F_t \right\|$$         |    point    |                                calculates the square root of the average of the sum of squares of forecasting errors |
 
-
+Based on different quantiles, we can give evaluation metrics in matrix form and visualize them to intuitively compare different forecasting methods. The following are relevant visualization examples. 
 
 ![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/CT.png)
 
