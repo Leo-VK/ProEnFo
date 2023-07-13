@@ -1332,10 +1332,20 @@ conda env create --file proenfo_env.yml
   - nodejs
   - mypy
   - pytorch
-
 ## Overall framework
 Our package covers the entire process of constructing forecasting models, including data preprocessing, construction of forecasting models, etc.
 ![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/package.jpg)
+## Quick Start
+'''
+\
+python
+def hello_world():
+    print("Hello, World!")
+
+hello_world()
+\
+'''
+## How to add your own framework
 
 ## Forecasting evaluation
 We include several metrics to evaluate the forecasting performance, here is a visualization example. For details, you can check it in ./evaluation/metrics.py
