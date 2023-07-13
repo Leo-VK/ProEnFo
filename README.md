@@ -254,7 +254,11 @@ class MYQuantile_Model(nn.Module):
         '''
         input the data into the model, here X_batch is the sequence data while X_batch_ex is the external variable.
         '''
-        return self.seq(concat_feature)
+        return output
+```
+Finally, you can add your model to the methods_to_train.
+```python
+methods_to_train.append(mi.MYQuantile_Model)
 ```
 
 ## Forecasting evaluation
