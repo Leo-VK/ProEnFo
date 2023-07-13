@@ -81,24 +81,24 @@ conda env create --file proenfo_env.yml
 Our package covers the entire process of constructing forecasting models, including data preprocessing, construction of forecasting models, etc.
 ![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/package.jpg)
 ## Available forecasting models 
-|    |    Models   | Paper |                                      Description                                      |
-|:--:|:-----------:|:-----:|:-------------------------------------------------------------------------------------:|
-|  1 |     BMQ     |       |           moving quantity method based on a fixed number of past time points          |
-|  2 |     BEQ     |       |                  moving quantity method based on all historical data                  |
-|  3 |     BCEP    |       | take the forecasting error obtained by the persistence method as quantile forecasting |
-|  4 |     QCE     |       |  take the forecasting error obtained by the linear regression as quantile forecasting |
-|  5 |     KNNR    |  link |                    quantile regression based on K-nearest neighbor                    |
-|  6 |     RFR     |  link |                       quantile regression based on random forest                      |
-|  7 |     SRFR    |  link |                   quantile regression based on sample random forest                   |
-|  8 |     ERT     |  link |                    quantile regression based on extreme random tree                   |
-|  9 |     SERT    |  link |                quantile regression based on sample extreme random tree                |
-| 10 |     FFNN    |  link |                quantile regression based on feed-forward neural network               |
-| 11 |     LSTM    |  link |                           quantile regression based on LSTM                           |
-| 12 |     CNN     |  link |                            quantile regression based on CNN                           |
-| 13 | Transformer |  link |                        quantile regression based on Transformer                       |
-| 14 |    LSTNet   |  link |                          quantile regression based on LSTNet                          |
-| 15 |   Wavenet   |  link |                          quantile regression based on Wavenet                         |
-| 16 |   N-BEATS   |  link |                          quantile regression based on N-BEATS                         |
+|    |    Models   | Paper | Type              |                                      Description                                      |
+|:--:|:-----------:|:-----:|-------------------|:-------------------------------------------------------------------------------------:|
+|  1 |     BMQ     |       | Non-deep learning |           moving quantity method based on a fixed number of past time points          |
+|  2 |     BEQ     |       | Non-deep learning |                  moving quantity method based on all historical data                  |
+|  3 |     BCEP    |       | Non-deep learning | take the forecasting error obtained by the persistence method as quantile forecasting |
+|  4 |     QCE     |       | Non-deep learning |  take the forecasting error obtained by the linear regression as quantile forecasting |
+|  5 |     KNNR    |  link | Non-deep learning |                    quantile regression based on K-nearest neighbor                    |
+|  6 |     RFR     |  link | Non-deep learning |                       quantile regression based on random forest                      |
+|  7 |     SRFR    |  link | Non-deep learning |                   quantile regression based on sample random forest                   |
+|  8 |     ERT     |  link | Non-deep learning |                    quantile regression based on extreme random tree                   |
+|  9 |     SERT    |  link | Non-deep learning |                quantile regression based on sample extreme random tree                |
+| 10 |     FFNN    |  link |   deep learning   |                quantile regression based on feed-forward neural network               |
+| 11 |     LSTM    |  link |   deep learning   |                           quantile regression based on LSTM                           |
+| 12 |     CNN     |  link |   deep learning   |                            quantile regression based on CNN                           |
+| 13 | Transformer |  link |   deep learning   |                        quantile regression based on Transformer                       |
+| 14 |    LSTNet   |  link |   deep learning   |                          quantile regression based on LSTNet                          |
+| 15 |   Wavenet   |  link |   deep learning   |                          quantile regression based on Wavenet                         |
+| 16 |   N-BEATS   |  link |   deep learning   |                          quantile regression based on N-BEATS                         |
 ## Quick Start
 To start forecasting, we first need to import some packages
 ```python
