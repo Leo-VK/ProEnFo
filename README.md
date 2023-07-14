@@ -258,7 +258,7 @@ class MYQuantile_Model(nn.Module):
 ```
 Finally, you can add your model to the methods_to_train.
 ```python
-methods_to_train.append(mi.MYQuantile_Model)
+methods_to_train.append(mi.MYQuantile_Regressor)
 ```
 
 ## Forecasting evaluation
