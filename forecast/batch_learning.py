@@ -2,7 +2,6 @@ import pandas as pd
 
 from models.model_init import QuantileRegressor, MultiQuantileRegressor, PointRegressor
 import torch
-device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 import numpy as np
 from typing import List
 import os
@@ -44,7 +43,8 @@ def multi_quantile_forecasting(X_train: pd.DataFrame,
                                external_features_diminsion: int,
                                target_lags: List,
                                data_name,
-                               strategy_name) -> pd.DataFrame:
+                               strategy_name,
+                               device) -> pd.DataFrame:
     """Multi-quantile forecasting workflow"""
     # Scale data if required
     if method.X_scaler:
@@ -102,7 +102,8 @@ def point_forecasting(X_train: pd.DataFrame,
                                external_features_diminsion: int,
                                target_lags: List,
                                data_name,
-                               strategy_name) -> pd.DataFrame:
+                               strategy_name,
+                               device) -> pd.DataFrame:
     """Multi-quantile forecasting workflow"""
     # Scale data if required
     if method.X_scaler:

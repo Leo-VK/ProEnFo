@@ -13,6 +13,10 @@ from math import sqrt
 import torch.nn.functional as F
 from tqdm import trange
 from typing import List
+from models.shift import DishTS,RevIN
+from itertools import chain
+
+
 
 class PytorchRegressor(BaseEstimator, RegressorMixin):
     """Class representing a pytorch regression module"""
@@ -23,17 +27,40 @@ class PytorchRegressor(BaseEstimator, RegressorMixin):
                  batch_size: int = 256,
                  epochs: int = 1000,
                  patience: int = 15,
-                 validation_ratio: float = 0.2):
+                 validation_ratio: float = 0.2,
+                 ifshift = False):
         self.model = model
         self.loss_function = loss_function
-        self.optimizer = optim.Adam(params=model.parameters(),lr = 0.0005)
+        # self.optimizer = optim.Adam(params=model.parameters(),lr = 0.0005)
         self.batch_size = batch_size
         self.epochs = epochs
         self.patience = patience
         self.validation_ratio = validation_ratio
+        self.ifshift = ifshift
+        if self.ifshift:
+            nm_device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+            self.nm = DishTS().to(nm_device)
+            combined_parameters = chain(self.nm.parameters(), self.model.parameters())
+            # 创建优化器，同时优化 self.nm 和 self.model 的参数
+            self.optimizer = optim.Adam(params=combined_parameters, lr=0.0005)
+        else:
+            self.optimizer = optim.Adam(params=model.parameters(),lr = 0.0005)
 
     def forward(self, X):
-        return self.model(X)
+        if self.ifshift:
+            print(X.shape)
+            forecast = self.model(X)
+            print(forecast.shape)
+            return forecast
+        else:
+            print(X.shape)
+            X, dec_inp = self.nm(X, 'forward')
+            forecast = self.model(X)
+            forecast = self.nm(forecast, 'inverse')
+            return forecast
+
+
+
 
     def fit(self, X: torch.Tensor, y: torch.Tensor, target_lags:List):
         X_tr, X_val, y_tr, y_val = train_test_split(X, y.reshape(-1, 1), shuffle=False, test_size=self.validation_ratio)
@@ -59,7 +86,16 @@ class PytorchRegressor(BaseEstimator, RegressorMixin):
                     if self.model.__class__.__name__ in ['LongShortTermMemory','TransformerTS','WaveNet','LSTN','NBeatsNet']:
                         X_tr_batch = X_tr_batch_o[:,:len(target_lags)]
                         X_tr_batch_ex = X_tr_batch_o[:,len(target_lags):]
-                        pred = self.model(X_tr_batch,X_tr_batch_ex)
+                        if self.ifshift:
+                            X_tr_batch = X_tr_batch.reshape(X_tr_batch.shape[0],X_tr_batch.shape[1],-1)
+                            X_tr_batch, dec_inp = self.nm(X_tr_batch, 'forward')
+                            X_tr_batch = X_tr_batch.reshape(X_tr_batch.shape[0],X_tr_batch.shape[1])
+                            pred = self.model(X_tr_batch,X_tr_batch_ex)
+                            pred = pred.unsqueeze(-1)
+                            pred = self.nm(pred, 'inverse')
+                            pred = pred.squeeze(-1)
+                        else:
+                            pred = self.model(X_tr_batch,X_tr_batch_ex)
                     else:
                         pred = self.model(X_tr_batch_o)
 
@@ -79,7 +115,16 @@ class PytorchRegressor(BaseEstimator, RegressorMixin):
                     if self.model.__class__.__name__ in ['LongShortTermMemory','TransformerTS','WaveNet','LSTN','NBeatsNet']:
                         X_val_batch = X_val_batch_o[:,:len(target_lags)]
                         X_val_batch_ex = X_val_batch_o[:,len(target_lags):]
-                        pred = self.model(X_val_batch,X_val_batch_ex)
+                        if self.ifshift:
+                            X_val_batch = X_val_batch.reshape(X_val_batch.shape[0],X_val_batch.shape[1],-1)
+                            X_val_batch, dec_inp = self.nm(X_val_batch, 'forward')
+                            X_val_batch = X_val_batch.reshape(X_val_batch.shape[0],X_val_batch.shape[1])
+                            pred = self.model(X_val_batch,X_val_batch_ex)
+                            pred = pred.unsqueeze(-1)
+                            pred = self.nm(pred, 'inverse')
+                            pred = pred.squeeze(-1)
+                        else:
+                            pred = self.model(X_val_batch,X_val_batch_ex)
                     else:
                         pred = self.model(X_val_batch_o)
                     loss = self.loss_function(pred, y_val_batch)
@@ -104,7 +149,18 @@ class PytorchRegressor(BaseEstimator, RegressorMixin):
             if self.model.__class__.__name__ in  ['LongShortTermMemory','TransformerTS','WaveNet','LSTN','NBeatsNet']:
                 X_batch = X[:,:len(target_lags)]
                 X_batch_ex = X[:,len(target_lags):]
-                return self.model(X_batch.float(),X_batch_ex.float()).cpu().data.numpy().squeeze()
+                if self.ifshift:
+                    X_batch = X_batch.reshape(X_batch.shape[0],X_batch.shape[1],-1)
+                    X_batch, dec_inp = self.nm(X_batch, 'forward')
+                    X_batch = X_batch.reshape(X_batch.shape[0],X_batch.shape[1])
+                    pred = self.model(X_batch,X_batch_ex)
+                    pred = pred.unsqueeze(-1)
+                    pred = self.nm(pred, 'inverse')
+                    pred = pred.squeeze(-1)
+                else:
+                    pred = self.model(X_batch.float(),X_batch_ex.float())
+                return pred.cpu().data.numpy().squeeze()
+                # return self.model(X_batch.float(),X_batch_ex.float()).cpu().data.numpy().squeeze()
             else:
                 return self.model(X.float()).cpu().data.numpy().squeeze()
            
@@ -545,7 +601,7 @@ class NBeatsNet(nn.Module):
             n_feature,
             external_features_diminsion,
             n_output,
-            device=torch.device('cuda'),
+            device=None,
             stack_types=(TREND_BLOCK, SEASONALITY_BLOCK),
             nb_blocks_per_stack=3,
             forecast_length=1,

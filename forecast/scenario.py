@@ -39,9 +39,11 @@ def calculate_scenario(data: pd.DataFrame,
                        post_processing_quantile: PostProcessingQuantileStrategy,
                        post_processing_value: PostProcessingValueStrategy,
                        evaluation_metrics: List[ErrorMetric],
+                       device,
                        prob_forecasting = True,
                        strategy='default',
-                       data_name = 'Unnamed') -> Tuple[Dict[str, Dict[str, pd.Series]], Dict[str, pd.DataFrame]]:
+                       data_name = 'Unnamed',
+                       ) -> Tuple[Dict[str, Dict[str, pd.Series]], Dict[str, pd.DataFrame]]:
     """Basic probabilistic forecasting scenario"""
 
     # Start time measurement
@@ -116,11 +118,13 @@ def calculate_scenario(data: pd.DataFrame,
             perf_timer = Timer()
             perf_timer.start()
             if isinstance(method, mi.QuantileRegressor):
+                if external_feature_selection.name =='noexternalselection':
+                    external_features_diminsion = len(datetime_features)
                 forecasts[method.name] = batch_learning.quantile_forecasting(X_train, Y_train, X_test, method,external_features_diminsion)
             elif isinstance(method, mi.MultiQuantileRegressor):
                 if external_feature_selection.name =='noexternalselection':
                     external_features_diminsion = len(datetime_features)
-                forecasts[method.name] = batch_learning.multi_quantile_forecasting(X_train, Y_train, X_test, method,external_features_diminsion = external_features_diminsion,target_lags = target_lags,strategy_name=strategy,data_name=data_name)
+                forecasts[method.name] = batch_learning.multi_quantile_forecasting(X_train, Y_train, X_test, method,external_features_diminsion = external_features_diminsion,target_lags = target_lags,strategy_name=strategy,data_name=data_name,device=device)
             elif isinstance(method, bi.Benchmark):
                 forecasts[method.name] = method.model.build_benchmark(Y_train, Y_test, horizon)
             else:
@@ -162,7 +166,7 @@ def calculate_scenario(data: pd.DataFrame,
             if isinstance(method, mi.PointRegressor):
                 if external_feature_selection.name =='noexternalselection':
                     external_features_diminsion = len(datetime_features)
-                forecasts[method.name] = batch_learning.point_forecasting(X_train, Y_train, X_test, method,external_features_diminsion = external_features_diminsion,target_lags = target_lags,strategy_name=strategy,data_name=data_name)
+                forecasts[method.name] = batch_learning.point_forecasting(X_train, Y_train, X_test, method,external_features_diminsion = external_features_diminsion,target_lags = target_lags,strategy_name=strategy,data_name=data_name,device=device)
             else:
                 raise ValueError("Method not recognized")
             performances[method.name] = perf_timer.stop()
