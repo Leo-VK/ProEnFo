@@ -283,5 +283,5 @@ We include several metrics to evaluate the forecasting performance and summarize
 
 Based on different quantiles, we can give evaluation metrics in matrix form and visualize them to intuitively compare different forecasting methods. The following are relevant visualization examples. 
 
-![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/CT.pdf)
+![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/CT.jpg)
 
