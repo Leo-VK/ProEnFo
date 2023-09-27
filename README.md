@@ -230,7 +230,7 @@ Based on Pytorch, users can simply add their own defined deep learning network t
 Firstly, users need to define the initialization method for the model in [./models/model_init.py](https://github.com/Leo-VK/ProEnFo/blob/main/models/model_init.py)
 ```python
 class MYQuantile_Regressor(MultiQuantileRegressor):
-    def __init__(self, quantiles: List[float]):
+    def __init__(self, quantiles: List[float] = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]):
         super().__init__(
             X_scaler=StandardScaler(),
             y_scaler=StandardScaler(),
@@ -258,7 +258,7 @@ class MYQuantile_Model(nn.Module):
 ```
 Finally, you can add your model to the methods_to_train.
 ```python
-methods_to_train.append(mi.MYQuantile_Regressor)
+methods_to_train.append(mi.MYQuantile_Regressor())
 ```
 
 ## Forecasting evaluation
