@@ -238,7 +238,7 @@ class MYQuantile_Regressor(MultiQuantileRegressor):
 
     def set_params(self, input_dim: int,external_features_diminsion: int):
         self.model = models.pytorch.PytorchRegressor(
-            model=models.pytorch.model(input_dim,external_features_diminsion, n_output=len(self.quantiles)),
+            model=models.pytorch.MYQuantile_Model(input_dim,external_features_diminsion, n_output=len(self.quantiles)),
             loss_function=pytorchtools.PinballLoss(self.quantiles))
         return self
 ```
