@@ -156,7 +156,7 @@ err_tot, forecast_tot, true = calculate_scenario(data=data,
 
 
 ## How to use the forecasting error-cost data
-
+```python
 from scipy.io import loadmat
 breakpoint_new=loadmat('./simulated_data/breakpoint_new.mat')
 breakpoint_new.pop("__header__")
@@ -165,6 +165,7 @@ breakpoint_new.pop("__globals__")
 breakpoint_raw=list(breakpoint_new.values())
 breakpoint = pytorchtools.breakpoint_generator(breakpoint_raw)[8]#take hour 9 as an example
 loss_function = pytorchtools.ContinuousPiecewiseLinearFunction(breakpoint)
+```
 
 ## How to add your own forecasting method into the framework
 Based on Pytorch, users can simply add their own defined deep learning network to our forecasting framework.
