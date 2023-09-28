@@ -25,21 +25,47 @@ import torch.nn as nn
 
 from typing import List, Tuple, Dict
 
+import feature.feature_lag_selection as fls
+import feature.feature_external_selection as fes
+import feature.feature_transformation as ft
+import feature.time_categorical as tc
+import feature.time_stationarization as ts
+import models.model_init as mi
+import models.benchmark_init as bi
+import evaluation.metrics as em
+import postprocessing.quantile as ppq
+import postprocessing.value as ppv
+import datetime as dt
+import torch
+
 
 def calculate_scenario(data: pd.DataFrame,
                        target: str,
                        methods_to_train: List[Union[bi.Benchmark, mi.QuantileRegressor, mi.MultiQuantileRegressor]],
-                       horizon: int,
-                       train_ratio: float,
-                       feature_transformation: FeatureTransformationStrategy,
-                       time_stationarization: TimeStationarizationStrategy,
-                       datetime_features: List[tc.TimeCategorical],
-                       target_lag_selection: FeatureLagSelectionStrategy,
-                       external_feature_selection: fes.FeatureExternalSelectionStrategy,
-                       post_processing_quantile: PostProcessingQuantileStrategy,
-                       post_processing_value: PostProcessingValueStrategy,
-                       evaluation_metrics: List[ErrorMetric],
-                       device,
+                       horizon: int = 24,
+                       train_ratio: float = 0.8,
+                       feature_transformation: FeatureTransformationStrategy = ft.NoTransformationStrategy(),
+                       time_stationarization: TimeStationarizationStrategy = ts.NoStationarizationStrategy(),
+                       datetime_features: List[tc.TimeCategorical] = [tc.Hour(),tc.Month(),tc.Day(),tc.Weekday()],
+                       target_lag_selection: FeatureLagSelectionStrategy = fls.ManualStrategy(lags=[24, 48, 72, 96, 120, 144, 168]),
+                       external_feature_selection: fes.FeatureExternalSelectionStrategy = fes.NoExternalSelectionStrategy(),
+                       post_processing_quantile: PostProcessingQuantileStrategy = ppq.QuantileSortingStrategy(),
+                       post_processing_value: PostProcessingValueStrategy = ppv.ValueClippingStrategy(0, None),
+                       evaluation_metrics: List[ErrorMetric] = [em.ReliabilityMatrix([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]),
+                      em.CalibrationMatrix([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]),
+                      em.WinklerScoreMatrix([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]),
+                      em.IntervalWidthMatrix([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]),
+                    #   em.RampScoreMatrix(threshold=0.1, normalize=True),
+                      em.PinballLossMatrix([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]),
+                      em.QuantileCrossingMatrix([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]),
+                      em.PinballLoss([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]),
+                      em.CalibrationError([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]),
+                      em.BoundaryCrossing(0, None),
+                      em.QuantileCrossing([0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]),
+                      em.Skewness(),
+                      em.Kurtosis(),
+                      em.QuartileDispersion()],
+                       device = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu'),
                        prob_forecasting = True,
                        strategy='default',
                        data_name = 'Unnamed',

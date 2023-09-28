@@ -90,7 +90,77 @@ class PinballLoss:
         quantile_coef = (error > 0).float().sub(self.quantiles)
         return (error * quantile_coef).mean()
     
+def breakpoint_generator(breakpoint_raw):
+    x_y_cord_sep=[]
+    for i in range(len(breakpoint_raw)):
+        if 0 in breakpoint_raw[i][:,0]:
+            x_cord_sort=np.sort(breakpoint_raw[i][:,0])
+            ind=np.argsort(breakpoint_raw[i][:,0])
+            y_cord_sort=breakpoint_raw[i][ind,1]
+            sd=np.concatenate((x_cord_sort.reshape(-1,1),y_cord_sort.reshape(-1,1)),axis=1)
+            x_y_cord_sep.append(sd)
+        else:
+            x_cord_int=np.append(breakpoint_raw[i][:,0],0)
+            y_cord_int=np.append(breakpoint_raw[i][:,1],0)
+            x_cord_sort=np.sort(x_cord_int)
+            ind=np.argsort(x_cord_int)
+            y_cord_sort=y_cord_int[ind]
+            sd=np.concatenate((x_cord_sort.reshape(-1,1),y_cord_sort.reshape(-1,1)),axis=1)
+            x_y_cord_sep.append(sd)
+    return x_y_cord_sep     
 
+
+
+class ContinuousPiecewiseLinearFunction(nn.Module):
+    def __init__(self, break_points):
+        super(ContinuousPiecewiseLinearFunction, self).__init__()
+        self.break_points = break_points
+        self.name = 'CPLF'
+        
+        # 根据输入的断点计算线性模型参数
+        slopes = []
+        intercepts = []
+        x1, y1 = break_points[0]
+        x2, y2 = break_points[1]
+        slope = (y1 - y2) / (x1 - x2)
+        intercept = y1 - slope * x1
+        slopes.append(slope)
+        intercepts.append(intercept)
+        
+        for i in range(len(break_points)):
+            x1, y1 = break_points[i]
+            if i == len(break_points) - 1:
+                x2, y2 = break_points[i - 1]
+                slope = (y1 - y2) / (x1 - x2)
+                intercept = y1 - slope * x1
+            else:
+                x2, y2 = break_points[i + 1]
+                slope = (y2 - y1) / (x2 - x1)
+                intercept = y1 - slope * x1
+                
+            slopes.append(slope)
+            intercepts.append(intercept)
+        
+        self.linear_models = list(zip(slopes, intercepts))
+    def forward(self, pred, true):
+        x = (pred - true)
+        y = torch.zeros_like(x)
+        linear_masks = []
+
+        # 计算线性部分的mask
+        for i in range(len(self.linear_models) - 1):
+            if i == 0:
+                linear_masks.append(x < self.break_points[i, 0])
+            else:
+                linear_masks.append((x >= self.break_points[i - 1, 0]) & (x < self.break_points[i, 0]))
+                
+        linear_masks.append((x >= self.break_points[-1, 0]))
+        
+        # 使用mask计算y值
+        for i, (m, b) in enumerate(self.linear_models):
+            y = torch.where(linear_masks[i], m * x + b, y)
+
+        return torch.mean(y)
 
 class ContinuousPiecewiseFunction(nn.Module):
     def __init__(self, break_points, overlap, linear_models, quadratic_models):
