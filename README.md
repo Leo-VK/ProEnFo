@@ -3,13 +3,13 @@
 ## Introduction
 
 This is the code related to the paper 
-"Benchmarks and Custom Package for Electrical Load Forecasting"
+"Benchmarks and Custom Package for Electrical Load Forecasting".
 This repository mainly aims at implementing routines for probabilistic energy forecasting. However, we also provide the implementation of relevant point forecasting models.
-The datasets and their forecasting results in this archive can be found [here](https://connecthkuhk-my.sharepoint.com/:f:/g/personal/u3009646_connect_hku_hk/Euy4Rv8DsM1Cu1hJ85yHL18BNsDNbS5XiaVoCvl-l-07tQ?e=OFLF3A.).
+The datasets and their forecasting results in this archive are transferring to an anonymous shared document(coming soon).
 To reproduce the results in our archive, users can refer to the process in the [main.py](https://github.com/Leo-VK/ProEnFo/blob/main/main.py) file. Users can easily construct different forecasting models by selecting different Feature engineering methods and preprocessing, post-processing, and training models.
 
 ## Dataset
-We include several different datasets in our load forecasting archive, which can be downloaded [here](https://connecthkuhk-my.sharepoint.com/:f:/g/personal/u3009646_connect_hku_hk/Euy4Rv8DsM1Cu1hJ85yHL18BNsDNbS5XiaVoCvl-l-07tQ?e=OFLF3A.). And there is the summary of them.
+We include several different datasets in our load forecasting archive. And there is the summary of them.
 |    |  Dataset | No.of series | Length | Resolution |  Load type |          External variables         |
 |:--:|:--------:|:------------:|:------:|:----------:|:----------:|:-----------------------------------:|
 |  1 |  Covid19 |       1      |  31912 |   hourly   | aggregated |    airTemperature, Humidity, etc    |
