@@ -81,7 +81,7 @@ class PinballScore:
 class PinballLoss:
     """Pinball loss averaged over quantiles and samples"""
 
-    def __init__(self, quantiles: List[float]):
+    def __init__(self, quantiles: List[float],device):
         self.quantiles = Tensor(quantiles).to(device)
         self.name = 'PL'
 

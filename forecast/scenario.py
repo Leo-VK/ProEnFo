@@ -97,7 +97,6 @@ def calculate_scenario(data: pd.DataFrame,
     if target_lags:
         X = lag_target(X, target, target_lags)
     
-    
     if external_feature_selection.name =='taosvanilla':
         # Exact tao's feature
         external_features, external_lags = external_feature_selection.select_features(data, horizon)
@@ -108,31 +107,31 @@ def calculate_scenario(data: pd.DataFrame,
     else:
         # Add categorical features
         if datetime_features:
-            X = tc.add_datetime_features(X, datetime_features)
-        
+            X = tc.add_datetime_features_with_lag(X, datetime_features,target_lags)
+            external_features_diminsion = len(datetime_features)
         # Add modified external features
         external_features, external_lags = external_feature_selection.select_features(data, horizon)
-        
         if not external_features.empty:
             X = fes.add_modified_external_features(X, external_features)
             external_features_diminsion = external_features.shape[1]+len(datetime_features)
+        
     
     # Delete lag interval
     if target_lags or not external_features.empty:
         X = remove_lag_interval(X, horizon, target_lags, external_lags)
-
     # Check feature matrix
     check_missing_values(X)
 
-    if external_feature_selection.name =='taosvanilla':
-        if X.columns.duplicated().sum() > 0:
-            raise ValueError("There are duplicated columns")
-    else:
-        check_dublicated_columns(X)
+    # if external_feature_selection.name =='taosvanilla':
+    #     if X.columns.duplicated().sum() > 0:
+    #         raise ValueError("There are duplicated columns")
+    # else:
+    #     check_dublicated_columns(X)
+    if X.columns.duplicated().sum() > 0:
+        raise ValueError("There are duplicated columns")
 
     # Construct train and test set
     X_train, X_test, Y_train, Y_test = split_train_test_set(X, target, train_ratio)
-
 
     if prob_forecasting:
         ##############################

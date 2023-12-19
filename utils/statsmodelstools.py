@@ -27,7 +27,8 @@ from pandas.tseries import offsets
 from pandas.tseries.frequencies import to_offset
 from scipy.stats import boxcox
 
-from statsmodels.tsa._stl import STL
+# from statsmodels.tsa._stl import STL
+from statsmodels.tsa.seasonal import STL
 
 def freq_to_period(freq: Union[str, offsets.DateOffset]) -> int:
     """

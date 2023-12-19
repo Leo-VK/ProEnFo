@@ -62,7 +62,7 @@ def multi_quantile_forecasting(X_train: pd.DataFrame,
 
     # Initialize, train and test models
     print(method.name)
-    if method.name in ['MQCNN','MQLSTM','MQFFNN','MQTransformer','MQLSTN','MQWaveNet','MQNBEATS']:
+    if method.name in ['MQCNN','MQLSTM','MQFFNN','MQTransformer','MQLSTN','MQWaveNet','MQNBEATS','MQInformer','MQDLinear','MQNLinear','MQFedformer','MQAutoformer']:
         method.model.model = method.model.model.to(device)
         X_train_val = torch.Tensor(X_train_val).to(device)
         X_test_val = torch.Tensor(X_test_val).to(device)
@@ -72,24 +72,23 @@ def multi_quantile_forecasting(X_train: pd.DataFrame,
         if os.path.isdir('./pkl_folder')!=True:
             os.mkdir('./pkl_folder')
         torch.save(method.model.model.state_dict(), './pkl_folder/'+strategy_name+'_'+data_name+'_'+method.name+'.pkl')
-        if method.name in ['MQTransformer']:
-            if len(X_test_val)>=256:
-                X_test_val_list = torch.split(X_test_val, 256)
-                pred_list = []
-                for i in range(len(X_test_val_list)):
-                    pred_list.append(method.model.predict(X_test_val_list[i],target_lags))
-                preds = np.concatenate(pred_list, axis=0)
-        else:
-            preds = method.model.predict(X_test_val,target_lags)
+        # # if method.name in ['MQTransformer']:
+        # #     if len(X_test_val)>=256:
+        # #         X_test_val_list = torch.split(X_test_val, 256)
+        # #         pred_list = []
+        # #         for i in range(len(X_test_val_list)):
+        # #             pred_list.append(method.model.predict(X_test_val_list[i],target_lags))
+        # #         preds = np.concatenate(pred_list, axis=0)
+        # else:
+        preds = method.model.predict(X_test_val,target_lags)
     else:
         method.model.fit(X_train_val, y_train_val)
         preds = method.model.predict(X_test_val)
-
     # prediction #
     # preds = method.model.predict(X_test_val,target_lags)
     if len(preds) == len(method.quantiles):
         preds = preds.T
-    preds = preds*method.y_scaler.scale_+method.y_scaler.mean_
+    preds = preds.cpu().detach().numpy()*method.y_scaler.scale_+method.y_scaler.mean_
     return pd.DataFrame(preds, columns=method.quantiles, index=X_test.index)
 
 

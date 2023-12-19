@@ -107,3 +107,36 @@ def add_datetime_features(data: pd.DataFrame, feature_strategies: List[TimeCateg
         data.insert(loc=data.shape[1], column=strategy.name, value=feature)
 
     return data
+
+
+def add_datetime_features_with_lag(data: pd.DataFrame, feature_strategies: List[TimeCategorical], target_lag: List[int], freq: str = 'H') -> pd.DataFrame:
+    """Add datetime features with and without target lags"""
+    original_index = data.index.to_series()
+    
+    # Add non-lagged features
+    for strategy in feature_strategies:
+        feature = strategy.calculate_feature(original_index)
+        if feature.sum() == 0:
+            raise ValueError("Resolution does not support this TimeCategorical")
+        if strategy.transformer is not None:
+            feature = strategy.transformer.fit_transform(feature)
+        
+        column_name = f"{strategy.name}"
+        data.insert(loc=data.shape[1], column=column_name, value=feature)
+    
+    # Add lagged features
+    for lag in target_lag:
+        lagged_index = original_index.shift(lag)  # Shift the index backward by 'lag' units
+        
+        for strategy in feature_strategies:
+            feature = strategy.calculate_feature(lagged_index)  # Calculate the feature using the lagged index
+            if feature.sum() == 0:
+                raise ValueError("Resolution does not support this TimeCategorical")
+            if strategy.transformer is not None:
+                feature = strategy.transformer.fit_transform(feature)
+            
+            feature.index = original_index  # Set the feature index back to the original index
+            column_name = f"{strategy.name}_lag{lag}"
+            data.insert(loc=data.shape[1], column=column_name, value=feature)
+
+    return data
