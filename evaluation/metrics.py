@@ -265,7 +265,7 @@ class Skewness(ErrorMetric):
     """Skewness based on quantiles ("Measuring Skewness and Kurtosis", R. Groeneveld et al.)"""
 
     def __init__(self, variant: Literal["Bowley", "Kelly", "Hinkley"] = "Bowley"):
-        self.calc_variants = {'Bowley': 0.75, 'Kelly': 0.9, 'Hinkley': 0.99}
+        self.calc_variants = {'Bowley': 0.7, 'Kelly': 0.9, 'Hinkley': 0.9}
         self.lower_bound = round(1 - self.calc_variants[variant], 2)
         self.upper_bound = self.calc_variants[variant]
 
@@ -277,7 +277,7 @@ class Skewness(ErrorMetric):
 class Kurtosis(ErrorMetric):
     """Kurtosis based on quantiles ("What Is Kurtosis?: An Influence Function Approach", D. Ruppert)"""
 
-    def __init__(self, alpha: float = 0.01, beta: float = 0.25):
+    def __init__(self, alpha: float = 0.1, beta: float = 0.3):
         self.alpha_lower_bound = alpha
         self.alpha_upper_bound = round(1 - alpha, 2)
         self.beta_lower_bound = beta
@@ -292,8 +292,8 @@ class QuartileDispersion(ErrorMetric):
     """Quartile coefficient of dispersion ("Confidence interval for a coefficient of quartile variation", D. Bonett)"""
 
     def __init__(self):
-        self.lower_bound = 0.25
-        self.upper_bound = 0.75
+        self.lower_bound = 0.3
+        self.upper_bound = 0.7
 
     def calculate_instant_error(self, y_true: pd.Series, y_pred: pd.DataFrame) -> pd.Series:
         return (y_pred[self.upper_bound] - y_pred[self.lower_bound]) / (
