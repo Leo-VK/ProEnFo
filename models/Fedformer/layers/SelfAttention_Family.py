@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 from math import sqrt
-from utils.masking import TriangularCausalMask, ProbMask
+from ..utils.masking import TriangularCausalMask, ProbMask,LocalMask
 import os
 
 

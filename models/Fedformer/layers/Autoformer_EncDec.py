@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
-from layers.SelfAttention_Family import FullAttention
+from .SelfAttention_Family import FullAttention
 
 
 class my_Layernorm(nn.Module):

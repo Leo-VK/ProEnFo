@@ -1,13 +1,15 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from layers.Embed import DataEmbedding, DataEmbedding_wo_pos,DataEmbedding_wo_pos_temp,DataEmbedding_wo_temp
-from layers.AutoCorrelation import AutoCorrelation, AutoCorrelationLayer
-from layers.FourierCorrelation import FourierBlock, FourierCrossAttention
-from layers.MultiWaveletCorrelation import MultiWaveletCross, MultiWaveletTransform
-from layers.SelfAttention_Family import FullAttention, ProbAttention
+import sys
+sys.path.append(".")
+from .layers.Embed import DataEmbedding, DataEmbedding_wo_pos,DataEmbedding_wo_pos_temp,DataEmbedding_wo_temp
+from .layers.AutoCorrelation import AutoCorrelation, AutoCorrelationLayer
+from .layers.FourierCorrelation import FourierBlock, FourierCrossAttention
+from .layers.MultiWaveletCorrelation import MultiWaveletCross, MultiWaveletTransform
+from .layers.SelfAttention_Family import FullAttention, ProbAttention
 # from layers.FED_wo_decomp import Encoder, Decoder, EncoderLayer, DecoderLayer, my_Layernorm, series_decomp, series_decomp_multi
-from layers.Autoformer_EncDec import Encoder, Decoder, EncoderLayer, DecoderLayer, my_Layernorm, series_decomp, series_decomp_multi
+from .layers.Autoformer_EncDec import Encoder, Decoder, EncoderLayer, DecoderLayer, my_Layernorm, series_decomp, series_decomp_multi
 import math
 import numpy as np
 
@@ -95,7 +97,7 @@ class Fedformer(nn.Module):
         # Encoder
         enc_modes = int(min(configs.modes, configs.seq_len//2))
         dec_modes = int(min(configs.modes, (configs.seq_len//2+configs.pred_len)//2))
-        print('enc_modes: {}, dec_modes: {}'.format(enc_modes, dec_modes))
+        # print('enc_modes: {}, dec_modes: {}'.format(enc_modes, dec_modes))
 
         self.encoder = Encoder(
             [

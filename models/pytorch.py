@@ -16,6 +16,18 @@ from typing import List
 from models.shift import DishTS,RevIN
 from itertools import chain
 
+def rearrange_tensor(input_tensor):
+    # 删除 "airTemperature_t-0" 列 (假设它是最后一列)
+    input_tensor = input_tensor[:, :-1]
+
+    # 提取没有lag的 'Month', 'Day', 'Weekday', 'Hour' 特征
+    no_lag_ex_features = input_tensor[:, 7:11]
+
+    # 重组剩余的tensor，使其形状变为 [batch, lag_length, 4]
+    lag_features = input_tensor[:, :7].reshape(input_tensor.shape[0], 7, 1)
+    lag_ex_features = input_tensor[:, 11:].view(input_tensor.shape[0], 7, 4)
+
+    return no_lag_ex_features, lag_features,lag_ex_features
 
 class PytorchRegressor(BaseEstimator, RegressorMixin):
     """Class representing a pytorch regression module"""
@@ -74,7 +86,7 @@ class PytorchRegressor(BaseEstimator, RegressorMixin):
         early_stopping = EarlyStopping(loss_function_name= self.loss_function.name,model_name = self.model.__class__.__name__, patience=self.patience, verbose=False)
         with trange(self.epochs) as t:
             for i in t:
-                # Training mode
+                # Training model
                 self.model.train()
                 losses = []
                 for X_tr_batch_o, y_tr_batch in training_loader:
@@ -82,9 +94,10 @@ class PytorchRegressor(BaseEstimator, RegressorMixin):
                     self.optimizer.zero_grad()
 
                     # get output from the model, given the inputs
-                    if self.model.__class__.__name__ in ['LongShortTermMemory','TransformerTS','WaveNet','LSTN','NBeatsNet']:
+                    if self.model.__class__.__name__ in ['LongShortTermMemory','WaveNet','LSTN','NBeatsNet']:
                         X_tr_batch = X_tr_batch_o[:,:len(target_lags)]
-                        X_tr_batch_ex = X_tr_batch_o[:,len(target_lags):]
+                        X_tr_batch_ex = torch.cat([X_tr_batch_o[:,len(target_lags):len(target_lags)+4],X_tr_batch_o[:,-1:]],1)
+
                         if self.ifshift:
                             X_tr_batch = X_tr_batch.reshape(X_tr_batch.shape[0],X_tr_batch.shape[1],-1)
                             X_tr_batch, dec_inp = self.nm(X_tr_batch, 'forward')
@@ -95,8 +108,18 @@ class PytorchRegressor(BaseEstimator, RegressorMixin):
                             pred = pred.squeeze(-1)
                         else:
                             pred = self.model(X_tr_batch,X_tr_batch_ex)
+                    elif self.model.__class__.__name__ in ['Transformer','Informer','Fedformer','Autoformer']:
+                        X_tr_dec_ex,X_tr_enc,X_tr_enc_ex = rearrange_tensor(X_tr_batch_o)
+                        X_tr_dec_ex = X_tr_dec_ex.unsqueeze(1)
+                        X_tr_dec = torch.zeros_like(X_tr_dec_ex)[:,:,:1]
+                        
+                        pred = self.model(X_tr_enc,X_tr_enc_ex,X_tr_dec,X_tr_dec_ex).squeeze(1)
+                    elif self.model.__class__.__name__ in ['DLinear','NLinear']:
+                        X_tr_dec_ex,X_tr_enc,X_tr_enc_ex = rearrange_tensor(X_tr_batch_o)
+                        pred = self.model(X_tr_enc).squeeze(1)
+
                     else:
-                        pred = self.model(X_tr_batch_o)
+                        pred = self.model(torch.cat([X_tr_batch_o[:,:len(target_lags)+4],X_tr_batch_o[:,-1:]],1))
 
                     # get loss for the predicted output
                     loss = self.loss_function(pred, y_tr_batch)
@@ -111,9 +134,9 @@ class PytorchRegressor(BaseEstimator, RegressorMixin):
                 self.model.eval()
                 validation_losses = []
                 for X_val_batch_o, y_val_batch in validation_loader:
-                    if self.model.__class__.__name__ in ['LongShortTermMemory','TransformerTS','WaveNet','LSTN','NBeatsNet']:
+                    if self.model.__class__.__name__ in ['LongShortTermMemory','WaveNet','LSTN','NBeatsNet']:
                         X_val_batch = X_val_batch_o[:,:len(target_lags)]
-                        X_val_batch_ex = X_val_batch_o[:,len(target_lags):]
+                        X_val_batch_ex = torch.cat([X_val_batch_o[:,len(target_lags):len(target_lags)+4],X_val_batch_o[:,-1:]],1)
                         if self.ifshift:
                             X_val_batch = X_val_batch.reshape(X_val_batch.shape[0],X_val_batch.shape[1],-1)
                             X_val_batch, dec_inp = self.nm(X_val_batch, 'forward')
@@ -124,8 +147,18 @@ class PytorchRegressor(BaseEstimator, RegressorMixin):
                             pred = pred.squeeze(-1)
                         else:
                             pred = self.model(X_val_batch,X_val_batch_ex)
+                    elif self.model.__class__.__name__ in ['Transformer','Informer','Fedformer','Autoformer']:
+                        X_val_dec_ex,X_val_enc,X_val_enc_ex = rearrange_tensor(X_val_batch_o)
+                        X_val_dec_ex = X_val_dec_ex.unsqueeze(1)
+                        X_val_dec = torch.zeros_like(X_val_dec_ex)[:,:,:1]
+                        
+                        pred = self.model(X_val_enc,X_val_enc_ex,X_val_dec,X_val_dec_ex).squeeze(1)
+                    elif self.model.__class__.__name__ in ['DLinear','NLinear']:
+                         X_val_dec_ex,X_val_enc,X_val_enc_ex = rearrange_tensor(X_val_batch_o)
+                         pred = self.model(X_val_enc).squeeze(1)
+
                     else:
-                        pred = self.model(X_val_batch_o)
+                        pred = self.model(torch.cat([X_val_batch_o[:,:len(target_lags)+4],X_val_batch_o[:,-1:]],1))
                     loss = self.loss_function(pred, y_val_batch)
                     validation_losses.append(loss.item())
 
@@ -147,7 +180,7 @@ class PytorchRegressor(BaseEstimator, RegressorMixin):
         with no_grad():
             if self.model.__class__.__name__ in  ['LongShortTermMemory','TransformerTS','WaveNet','LSTN','NBeatsNet']:
                 X_batch = X[:,:len(target_lags)]
-                X_batch_ex = X[:,len(target_lags):]
+                X_batch_ex = torch.cat([X[:,len(target_lags):len(target_lags)+4],X[:,-1:]],1)
                 if self.ifshift:
                     X_batch = X_batch.reshape(X_batch.shape[0],X_batch.shape[1],-1)
                     X_batch, dec_inp = self.nm(X_batch, 'forward')
@@ -160,8 +193,20 @@ class PytorchRegressor(BaseEstimator, RegressorMixin):
                     pred = self.model(X_batch.float(),X_batch_ex.float())
                 return pred.cpu().data.numpy().squeeze()
                 # return self.model(X_batch.float(),X_batch_ex.float()).cpu().data.numpy().squeeze()
+            elif self.model.__class__.__name__ in ['Transformer','Informer','Fedformer','Autoformer']:
+                X_dec_ex,X_enc,X_enc_ex = rearrange_tensor(X)
+                X_dec_ex = X_dec_ex.unsqueeze(1)
+                X_dec = torch.zeros_like(X_dec_ex)[:,:,:1]
+                
+                pred = self.model(X_enc,X_enc_ex,X_dec,X_dec_ex).squeeze(1)
+                return pred
+            elif self.model.__class__.__name__ in ['DLinear','NLinear']:
+                X_dec_ex,X_enc,X_enc_ex = rearrange_tensor(X)
+                pred = self.model(X_enc).squeeze(1)
+                return pred
+
             else:
-                return self.model(X.float()).cpu().data.numpy().squeeze()
+                return self.model(torch.cat([X[:,:len(target_lags)+4],X[:,-1:]],1).float()).cpu().data.numpy().squeeze()
            
 
 

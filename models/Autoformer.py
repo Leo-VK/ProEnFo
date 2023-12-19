@@ -1,18 +1,24 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from layers.Embed import DataEmbedding, DataEmbedding_wo_pos,DataEmbedding_wo_pos_temp,DataEmbedding_wo_temp
-from layers.AutoCorrelation import AutoCorrelation, AutoCorrelationLayer
-from layers.Autoformer_EncDec import Encoder, Decoder, EncoderLayer, DecoderLayer, my_Layernorm, series_decomp
+import sys
+sys.path.append(".")
+from models.layers.Embed import DataEmbedding, DataEmbedding_wo_pos,DataEmbedding_wo_pos_temp,DataEmbedding_wo_temp
+from models.layers.AutoCorrelation import AutoCorrelation, AutoCorrelationLayer
+from models.layers.Autoformer_EncDec import Encoder, Decoder, EncoderLayer, DecoderLayer, my_Layernorm, series_decomp
 import math
 import numpy as np
 
 
-class Autoformer(nn.Module):
-    """
+"""
     Autoformer is the first method to achieve the series-wise connection,
-    with inherent O(LlogL) complexity
-    """
+    with  inherent O(LlogL) complexity
+"""
+
+
+class Autoformer(nn.Module):
+
+    ##### My Autoformer, change the way of attention calculation ###### 
     def __init__(self, configs):
         super(Autoformer, self).__init__()
         self.seq_len = configs.seq_len

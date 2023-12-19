@@ -1,4 +1,6 @@
 import torch
+import numpy as np
+import math
 
 class TriangularCausalMask():
     def __init__(self, B, L, device="cpu"):
@@ -20,6 +22,18 @@ class ProbMask():
                     index, :].to(device)
         self._mask = indicator.view(scores.shape).to(device)
 
+    @property
+    def mask(self):
+        return self._mask
+
+class LocalMask():
+    def __init__(self, B, L,S,device="cpu"):
+        mask_shape = [B, 1, L, S]
+        with torch.no_grad():
+            self.len = math.ceil(np.log2(L))
+            self._mask1 = torch.triu(torch.ones(mask_shape, dtype=torch.bool), diagonal=1).to(device)
+            self._mask2 = ~torch.triu(torch.ones(mask_shape,dtype=torch.bool),diagonal=-self.len).to(device)
+            self._mask = self._mask1+self._mask2
     @property
     def mask(self):
         return self._mask

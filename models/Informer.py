@@ -1,17 +1,22 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from utils.masking import TriangularCausalMask, ProbMask
-from layers.Transformer_EncDec import Decoder, DecoderLayer, Encoder, EncoderLayer, ConvLayer
-from layers.SelfAttention_Family import FullAttention, ProbAttention, AttentionLayer
-from layers.Embed import DataEmbedding,DataEmbedding_wo_pos,DataEmbedding_wo_temp,DataEmbedding_wo_pos_temp
+import sys
+sys.path.append(".")
+from models.utils.masking import TriangularCausalMask, ProbMask
+from models.layers.Transformer_EncDec import Decoder, DecoderLayer, Encoder, EncoderLayer, ConvLayer
+from models.layers.SelfAttention_Family import FullAttention, ProbAttention, AttentionLayer
+from models.layers.Embed import DataEmbedding,DataEmbedding_wo_pos,DataEmbedding_wo_temp,DataEmbedding_wo_pos_temp
 import numpy as np
+
+"""
+    Informer with Propspare attention in O(LlogL) complexity
+"""
 
 
 class Informer(nn.Module):
-    """
-    Informer with Propspare attention in O(LlogL) complexity
-    """
+
+    ###### My_informer accerlate the attention calculation #####
     def __init__(self, configs):
         super(Informer, self).__init__()
         self.pred_len = configs.pred_len

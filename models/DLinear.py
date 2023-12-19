@@ -71,6 +71,8 @@ class DLinear(nn.Module):
             # Use this two lines if you want to visualize the weights
             # self.Linear_Seasonal.weight = nn.Parameter((1/self.seq_len)*torch.ones([self.pred_len,self.seq_len]))
             # self.Linear_Trend.weight = nn.Parameter((1/self.seq_len)*torch.ones([self.pred_len,self.seq_len]))
+        self.out_channels = configs.c_out
+        self.adjust_channels = nn.Linear(self.channels, self.out_channels)
 
     def forward(self, x):
         # x: [Batch, Input length, Channel]
@@ -87,6 +89,7 @@ class DLinear(nn.Module):
             trend_output = self.Linear_Trend(trend_init)
 
         x = seasonal_output + trend_output
-        return x.permute(0,2,1) # to [Batch, Output length, Channel]
+        x = self.adjust_channels(x.permute(0,2,1))
+        return x # to [Batch, Output length, Channel]
 
 

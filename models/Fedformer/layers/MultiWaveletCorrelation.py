@@ -11,8 +11,8 @@ from einops import rearrange, reduce, repeat
 from torch import nn, einsum, diagonal
 from math import log2, ceil
 import pdb
-from utils.masking import LocalMask
-from layers.utils import get_filter
+from ..utils.masking import LocalMask
+from .utils import get_filter
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -25,7 +25,7 @@ class MultiWaveletTransform(nn.Module):
     def __init__(self, ich=1, k=8, alpha=16, c=128,
                  nCZ=1, L=0, base='legendre', attention_dropout=0.1):
         super(MultiWaveletTransform, self).__init__()
-        print('base', base)
+        # print('base', base)
         self.k = k
         self.c = c
         self.L = L
@@ -70,7 +70,7 @@ class MultiWaveletCross(nn.Module):
                  initializer=None, activation='tanh',
                  **kwargs):
         super(MultiWaveletCross, self).__init__()
-        print('base', base)
+        # print('base', base)
 
         self.c = c
         self.k = k
@@ -213,7 +213,7 @@ class FourierCrossAttentionW(nn.Module):
     def __init__(self, in_channels, out_channels, seq_len_q, seq_len_kv, modes=16, activation='tanh',
                  mode_select_method='random'):
         super(FourierCrossAttentionW, self).__init__()
-        print('corss fourier correlation used!')
+        # print('corss fourier correlation used!')
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.modes1 = modes

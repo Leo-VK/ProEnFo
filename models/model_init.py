@@ -23,11 +23,47 @@ import torch
 from torch.nn import functional as F
 
 from sklearn.base import BaseEstimator, TransformerMixin
+from models.Transformer import Transformer
 from models.Informer import Informer
 from models.Autoformer import Autoformer
 from models.DLinear import DLinear
 from models.NLinear import NLinear
 from models.Fedformer.FEDformer import Fedformer
+
+class Configs(object):
+    def __init__(self, ab=0, modes=32, mode_select='random', version='Wavelets', moving_avg= 25, L=1,
+                 base='legendre', cross_activation='tanh', seq_len=7, label_len=7, pred_len=1,
+                 output_attention=False, enc_in=1, dec_in=1, d_model=16, embed='timeF', dropout=0.05, freq='h',
+                 factor=1, n_heads=8, d_ff=16, e_layers=2, d_layers=1, c_out=9, activation='gelu', wavelet=0,embed_type = 0,distil = True,individual=False):
+        self.ab = ab
+        self.modes = modes
+        self.mode_select = mode_select
+        self.version = version
+        self.moving_avg = moving_avg
+        self.L = L
+        self.base = base
+        self.cross_activation = cross_activation
+        self.seq_len = seq_len
+        self.label_len = label_len
+        self.pred_len = pred_len
+        self.output_attention = output_attention
+        self.enc_in = enc_in
+        self.dec_in = dec_in
+        self.d_model = d_model
+        self.embed = embed
+        self.dropout = dropout
+        self.freq = freq
+        self.factor = factor
+        self.n_heads = n_heads
+        self.d_ff = d_ff
+        self.e_layers = e_layers
+        self.d_layers = d_layers
+        self.c_out = c_out
+        self.activation = activation
+        self.wavelet = wavelet
+        self.embed_type = embed_type
+        self.distil = distil
+        self.individual = individual
 
 class DummyScaler(BaseEstimator, TransformerMixin):
     def __init__(self):
@@ -349,6 +385,23 @@ class MQCNN(MultiQuantileRegressor):
     
 
 
+# class MQTransformer(MultiQuantileRegressor):
+#     """Feedforward neural network optimizing quantile loss from pytorch"""
+
+#     def __init__(self, quantiles: List[float],device):
+#         super().__init__(
+#             X_scaler=StandardScaler(),
+#             y_scaler=StandardScaler(),
+#             quantiles=quantiles,
+#             device = device)
+
+#     def set_params(self, input_dim: int,external_features_diminsion: int):
+#         input_dim = 1
+#         self.model = models.pytorch.PytorchRegressor(
+#             model=models.pytorch.TransformerTS(input_dim,external_features_diminsion, n_output=len(self.quantiles)),
+#             loss_function=pytorchtools.PinballLoss(self.quantiles,self.device))
+#         return self
+    
 class MQTransformer(MultiQuantileRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
@@ -357,12 +410,15 @@ class MQTransformer(MultiQuantileRegressor):
             X_scaler=StandardScaler(),
             y_scaler=StandardScaler(),
             quantiles=quantiles,
-            device = device)
+            device = device,
+            )
+        self.configs = Configs()
 
     def set_params(self, input_dim: int,external_features_diminsion: int):
         input_dim = 1
+        self.configs.c_out = len(self.quantiles)
         self.model = models.pytorch.PytorchRegressor(
-            model=models.pytorch.TransformerTS(input_dim,external_features_diminsion, n_output=len(self.quantiles)),
+            model=Transformer(self.configs),
             loss_function=pytorchtools.PinballLoss(self.quantiles,self.device))
         return self
     
@@ -430,11 +486,13 @@ class MQInformer(MultiQuantileRegressor):
             y_scaler=StandardScaler(),
             quantiles=quantiles,
             device = device)
+        self.configs = Configs()
 
-    def set_params(self, input_dim: int,external_features_diminsion: int,configs):
+    def set_params(self, input_dim: int,external_features_diminsion: int):
         input_dim = 1
+        self.configs.c_out = len(self.quantiles)
         self.model = models.pytorch.PytorchRegressor(
-            model=Informer(configs),
+            model=Informer(self.configs),
             loss_function=pytorchtools.PinballLoss(self.quantiles,self.device))
         return self
     
@@ -447,11 +505,13 @@ class MQDLinear(MultiQuantileRegressor):
             y_scaler=StandardScaler(),
             quantiles=quantiles,
             device = device)
+        self.configs = Configs()
 
-    def set_params(self, input_dim: int,external_features_diminsion: int,configs):
+    def set_params(self, input_dim: int,external_features_diminsion: int):
         input_dim = 1
+        self.configs.c_out = len(self.quantiles)
         self.model = models.pytorch.PytorchRegressor(
-            model=DLinear(configs),
+            model=DLinear(self.configs),
             loss_function=pytorchtools.PinballLoss(self.quantiles,self.device))
         return self
 
@@ -465,11 +525,13 @@ class MQNLinear(MultiQuantileRegressor):
             y_scaler=StandardScaler(),
             quantiles=quantiles,
             device = device)
+        self.configs = Configs()
 
-    def set_params(self, input_dim: int,external_features_diminsion: int,configs):
+    def set_params(self, input_dim: int,external_features_diminsion: int):
         input_dim = 1
+        self.configs.c_out = len(self.quantiles)
         self.model = models.pytorch.PytorchRegressor(
-            model=NLinear(configs),
+            model=NLinear(self.configs),
             loss_function=pytorchtools.PinballLoss(self.quantiles,self.device))
         return self
 
@@ -482,11 +544,13 @@ class MQAutoformer(MultiQuantileRegressor):
             y_scaler=StandardScaler(),
             quantiles=quantiles,
             device = device)
+        self.configs = Configs()
 
-    def set_params(self, input_dim: int,external_features_diminsion: int,configs):
+    def set_params(self, input_dim: int,external_features_diminsion: int):
         input_dim = 1
+        self.configs.c_out = len(self.quantiles)
         self.model = models.pytorch.PytorchRegressor(
-            model=Autoformer(configs),
+            model=Autoformer(self.configs),
             loss_function=pytorchtools.PinballLoss(self.quantiles,self.device))
         return self
 
@@ -499,11 +563,13 @@ class MQFedformer(MultiQuantileRegressor):
             y_scaler=StandardScaler(),
             quantiles=quantiles,
             device = device)
+        self.configs = Configs()
 
-    def set_params(self, input_dim: int,external_features_diminsion: int,configs):
+    def set_params(self, input_dim: int,external_features_diminsion: int):
         input_dim = 1
+        self.configs.c_out = len(self.quantiles)
         self.model = models.pytorch.PytorchRegressor(
-            model=Fedformer(configs),
+            model=Fedformer(self.configs),
             loss_function=pytorchtools.PinballLoss(self.quantiles,self.device))
         return self
     
@@ -545,7 +611,7 @@ class PointRegressor(ABC):
         self
         """
 
-class FFNN(PointRegressor):
+class PFFNN(PointRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
     def __init__(self,loss_function = pytorchtools.MSE()):
@@ -560,7 +626,7 @@ class FFNN(PointRegressor):
         return self
 
 
-class LSTM(PointRegressor):
+class PLSTM(PointRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
     def __init__(self,loss_function = pytorchtools.MSE(),ifshift = False):
@@ -575,7 +641,7 @@ class LSTM(PointRegressor):
         return self
 
 
-class CNN(PointRegressor):
+class PCNN(PointRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
     def __init__(self,loss_function = pytorchtools.MSE()):
@@ -590,7 +656,7 @@ class CNN(PointRegressor):
     
 
 
-class Transformer(PointRegressor):
+class PTransformer(PointRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
     def __init__(self,loss_function = pytorchtools.MSE(),ifshift = False):
@@ -605,7 +671,7 @@ class Transformer(PointRegressor):
         return self
     
 
-class LSTN(PointRegressor):
+class PLSTN(PointRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
     def __init__(self,loss_function = pytorchtools.MSE(),ifshift = False):
@@ -620,7 +686,7 @@ class LSTN(PointRegressor):
         return self
 
 
-class WaveNet(PointRegressor):
+class PWaveNet(PointRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
     def __init__(self,loss_function = pytorchtools.MSE(),ifshift = False):
@@ -635,7 +701,7 @@ class WaveNet(PointRegressor):
         return self
     
 
-class NBEATS(PointRegressor):
+class PNBEATS(PointRegressor):
     """Feedforward neural network optimizing quantile loss from pytorch"""
 
     def __init__(self,device,loss_function = pytorchtools.MSE(),ifshift = False):

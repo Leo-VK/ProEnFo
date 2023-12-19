@@ -22,6 +22,8 @@ class NLinear(nn.Module):
                 self.Linear.append(nn.Linear(self.seq_len,self.pred_len))
         else:
             self.Linear = nn.Linear(self.seq_len, self.pred_len)
+        self.out_channels = configs.c_out
+        self.adjust_channels = nn.Linear(self.channels, self.out_channels)
 
     def forward(self, x):
         # x: [Batch, Input length, Channel]
@@ -35,4 +37,5 @@ class NLinear(nn.Module):
         else:
             x = self.Linear(x.permute(0,2,1)).permute(0,2,1)
         x = x + seq_last
+        x = self.adjust_channels(x)
         return x # [Batch, Output length, Channel]
