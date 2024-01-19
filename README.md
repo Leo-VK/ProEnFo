@@ -99,6 +99,11 @@ Our package covers the entire process of constructing forecasting models, includ
 | 14 |    LSTNet   |  [link](https://dl.acm.org/doi/abs/10.1145/3209978.3210006) |   deep learning   |                          quantile regression based on LSTNet                          |
 | 15 |   Wavenet   |  [link](https://arxiv.org/abs/1609.03499) |   deep learning   |                          quantile regression based on Wavenet                         |
 | 16 |   N-BEATS   |  [link](https://arxiv.org/abs/1905.10437) |   deep learning   |                          quantile regression based on N-BEATS                         |
+| 17 |   DLinear   |   |   deep learning   |                          quantile regression based on DLinear                         |
+| 18 |   NLinear   |   |   deep learning   |                          quantile regression based on NLinear                         |
+| 19 |   Autoformer   |  |   deep learning   |                          quantile regression based on Autoformer                         |
+| 20 |   Fedformer   |   |   deep learning   |                          quantile regression based on Fedformer                         |
+| 21 |   Informer   |   |   deep learning   |                          quantile regression based on Informer                         |
 ## Quick Start
 To start forecasting, we first need to import some packages.
 ```python
