@@ -23,6 +23,7 @@ We include several different datasets in our load forecasting archive. And there
 |  9 | Cockatoo |       1      |  17544 |   hourly   |  building  |   airTemperature, wind speed, etc   |
 | 10 |    ELF   |       1      |  21792 |   hourly   | aggregated |                  No                 |
 | 11 |    UCI   |      321     |  26304 |   hourly   |  building  |                  No                 |
+| 12 |    REF   |       72     |  -     | 15 minute  |      -     |  radiance, temperature, etc         |
 
 
 ## Prerequisites
