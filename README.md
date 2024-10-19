@@ -25,7 +25,7 @@ We include several different datasets in our load forecasting archive. And there
 | 11 |    UCI   |      321     |  26304 |   hourly   |  building  |                  No                 |
 | 12 |    REF   |       72     |  -     | 15 minute  |      -     |     irradiance, temperature, etc    |
 
-Among them, REF is our newly open-source renewable energy dataset，we will make it open-source soon.
+Among them, REF is our newly open-source renewable energy dataset, which contains several renewable energy series including onshore wind, offshore wind. and PV. We will make it open-source soon.
 
 ## Prerequisites
 - Python 
