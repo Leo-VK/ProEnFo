@@ -3,13 +3,12 @@
 ## Introduction
 
 This is the code related to the paper 
-"Benchmarks and Custom Package for Energy Forecasting".
+"EnFoAV: Benchmarks and Custom Package for Energy Forecasting Considering Auxiliary Variables".
 This repository mainly aims at implementing routines for probabilistic energy forecasting. However, we also provide the implementation of relevant point forecasting models.
-The datasets and their forecasting results in this archive are transferring to an anonymous shared [document](https://drive.google.com/drive/folders/1j84VPNtwJHdgwQ55vKNcUIZ0YvTv0Z2V?usp=sharing).
-To reproduce the results in our archive, users can refer to the process in the [main.py](https://github.com/Leo-VK/ProEnFo/blob/main/main.py) file. Users can easily construct different forecasting models by selecting different Feature engineering methods and preprocessing, post-processing, and training models.
+The datasets and their forecasting results in this archive will be released after arrangement. Please refer to the notebook for reproducing the results on the GEF14 dataset. Users can easily construct different forecasting models by selecting different Feature engineering methods and preprocessing, post-processing, and training models.
 
 ## Dataset
-We include several different datasets in our load forecasting archive. And there is the summary of them.
+We include several different datasets in our load forecasting archive. And there is a summary of them.
 |    |  Dataset | No.of series | Length | Resolution |  Load type |          External variables         |
 |:--:|:--------:|:------------:|:------:|:----------:|:----------:|:-----------------------------------:|
 |  1 |  Covid19 |       1      |  31912 |   hourly   | aggregated |    airTemperature, Humidity, etc    |
@@ -24,8 +23,9 @@ We include several different datasets in our load forecasting archive. And there
 | 10 |    ELF   |       1      |  21792 |   hourly   | aggregated |                  No                 |
 | 11 |    UCI   |      321     |  26304 |   hourly   |  building  |                  No                 |
 | 12 |    REF   |       72     |  -     | 15 minute  |      -     |     irradiance, temperature, etc    |
+| 13 |    Electricity Price   |       2     |  -     | hourly  |      -     |     load prediction, wind power prediction, etc    |
 
-Among them, REF is our newly open-source renewable energy dataset, which contains several renewable energy series including onshore wind, offshore wind. and PV. We will make it open-source soon.
+Among them, REF is our newly open-source renewable energy dataset, which contains several renewable energy series including onshore wind, offshore wind, and PV. We will make it open-source soon.
 
 ## Prerequisites
 - Python 
@@ -81,7 +81,7 @@ conda env create --file proenfo_env.yml
   - pytorch
 ## Overall framework
 Our package covers the entire process of constructing forecasting models, including data preprocessing, construction of forecasting models, etc.
-![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/package.jpg)
+![contents](https://anonymous.4open.science/r/EnFoAV-3033/figure/Energy_Forecasting.pdf)
 ## Available forecasting models 
 |    |    Models   | Paper |        Type       |                                      Description                                      |
 |:--:|:-----------:|:-----:|:-----------------:|:-------------------------------------------------------------------------------------:|
