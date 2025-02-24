@@ -52,22 +52,8 @@ If there's a new package in the `proenfo_env.yml` file you have to update the pa
 conda env update -f proenfo_env.yml
 ```
 
-### Export your local environment
-
-Export your environment for other users
-
-```bash
-conda env export > proenfo_env.yml 
-```
-
-### Recreate environment in connection with Pip
-```bash
-conda env remove --name proenfo_env
-conda env create --file proenfo_env.yml
-```
-
 ### Initial packages include
-  - python=3.9.13
+  - python=3.8.18
   - numpy
   - pandas
   - scikit-learn
@@ -81,7 +67,7 @@ conda env create --file proenfo_env.yml
   - pytorch
 ## Overall framework
 Our package covers the entire process of constructing forecasting models, including data preprocessing, construction of forecasting models, etc.
-![contents](https://anonymous.4open.science/r/EnFoAV-3033/figure/Energy_Forecasting.pdf)
+![contents](https://anonymous.4open.science/r/EnFoAV-3033/figure/Energy_Forecasting.jpg)
 ## Available forecasting models 
 |    |    Models   | Paper |        Type       |                                      Description                                      |
 |:--:|:-----------:|:-----:|:-----------------:|:-------------------------------------------------------------------------------------:|
@@ -232,5 +218,5 @@ We include several metrics to evaluate the forecasting performance and summarize
 
 Based on different quantiles, we can give evaluation metrics in matrix form and visualize them to intuitively compare different forecasting methods. The following are relevant visualization examples. 
 
-![contents](https://raw.githubusercontent.com/Leo-VK/ProEnFo/main/figure/CT.jpg)
+![contents](https://anonymous.4open.science/r/EnFoAV-3033/figure/visualization.jpg)
 
