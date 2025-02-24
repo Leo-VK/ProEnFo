@@ -137,6 +137,7 @@ data = pd.read_pickle(f"data/{site_id}/{file_name}")
 target = 'load'
 ```
 Define your forecasting setting, eg, forecasting quantiles, and feature engineering strategy.
+```python
 err_tot, forecast_tot,true_tot = calculate_scenario(data=data,
                                                          target=target,
                                                          methods_to_train=methods_to_train,
