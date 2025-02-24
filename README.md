@@ -81,11 +81,27 @@ Our package covers the entire process of constructing forecasting models, includ
 |  8 |    LSTNet   |  [link](https://dl.acm.org/doi/abs/10.1145/3209978.3210006) |   deep learning   |                          quantile regression based on LSTNet                          |
 |  9 |   Wavenet   |  [link](https://arxiv.org/abs/1609.03499) |   deep learning   |                          quantile regression based on Wavenet                         |
 | 10 |   N-BEATS   |  [link](https://arxiv.org/abs/1905.10437) |   deep learning   |                          quantile regression based on N-BEATS                         |
-| 11 |   DLinear   |   |   deep learning   |                          quantile regression based on DLinear                         |
-| 12 |   NLinear   |   |   deep learning   |                          quantile regression based on NLinear                         |
-| 13 |   Autoformer   |  |   deep learning   |                          quantile regression based on Autoformer                         |
-| 14 |   Fedformer   |   |   deep learning   |                          quantile regression based on Fedformer                         |
-| 15 |   Informer   |   |   deep learning   |                          quantile regression based on Informer                         |
+| 11 |   Informer   |   |   deep learning   |                          quantile regression based on Informer                         |
+| 12 |   Autoformer   |  |   deep learning   |                          quantile regression based on Autoformer                         |
+| 13 |   Fedformer   |   |   deep learning   |                          quantile regression based on Fedformer                         |
+| 14 |   DLinear   |   |   deep learning   |                          quantile regression based on DLinear                         |
+| 15 |   FiLM   |   |   deep learning   |                          quantile regression based on FiLM                         |
+| 16 |   iTransformer   |   |   deep learning   |                          quantile regression based on iTransformer                         |
+| 17 |   NSTransformer   |   |   deep learning   |                          quantile regression based on NSTransformer                         |
+| 18 |   PatchTST   |   |   deep learning   |                          quantile regression based on PatchTST                         |
+| 19 |   SegRNN   |   |   deep learning   |                          quantile regression based on SegRNN                         |
+| 20 |   TimeMixer   |   |   deep learning   |                          quantile regression based on TimeMixer                         |
+| 21 |   TimesNet   |   |   deep learning   |                          quantile regression based on TimesNet                         |
+| 22 |   Tsmixer   |   |   deep learning   |                          quantile regression based on Tsmixer                         |
+| 23 |   FreTS   |   |   deep learning   |                          quantile regression based on FreTS                         |
+| 24 |   Reformer   |   |   deep learning   |                          quantile regression based on Reformer                         |
+| 25 |   MICN   |   |   deep learning   |                          quantile regression based on MICN                         |
+| 26 |   TimeXer   |   |   deep learning   |                          quantile regression based on TimeXer                         |
+| 27 |   N-BEATSX   |   |   deep learning   |                          quantile regression based on N-BEATSX                         |
+| 28 |   BiTCN   |   |   deep learning   |                          quantile regression based on BiTCN                         |
+| 29 |   TFT   |   |   deep learning   |                          quantile regression based on TFT                         |
+| 30 |   TiDE   |   |   deep learning   |                          quantile regression based on TiDE                         |
+| 31 |   TsmixerEXT   |   |   deep learning   |                          quantile regression based on TsmixerEXT                         |
 ## Quick Start
 To start forecasting, we first need to import some packages.
 ```python
@@ -114,31 +130,28 @@ import ast
 ```
 Import the dataset, the example of the format of the dataset can be seen in [./data](https://github.com/Leo-VK/ProEnFo/tree/main/data/GFC14_load). 
 ```python
-site_id = 'GFC14_load'
+repeat = 3
+site_id = "GEF14"
 file_name = "load_with_weather.pkl"
 data = pd.read_pickle(f"data/{site_id}/{file_name}")
 target = 'load'
 ```
 Define your forecasting setting, eg, forecasting quantiles, and feature engineering strategy.
-```
-err_tot, forecast_tot, true = calculate_scenario(data=data,
-                                                target=target,
-                                                methods_to_train=methods_to_train,
-                                                horizon=horizon,
-                                                train_ratio=train_ratio,
-                                                feature_transformation=feature_transformation,
-                                                time_stationarization=time_stationarization,
-                                                datetime_features=datetime_features,
-                                                target_lag_selection=target_lag_selection,
-                                                external_feature_selection=external_feature_selection,
-                                                post_processing_quantile=post_processing_quantile,
-                                                post_processing_value=post_processing_value,
-                                                evaluation_metrics=evaluation_metrics,
-                                                device = device,
-                                                prob_forecasting = False,
-                                                strategy=train_stratehy,
-                                                data_name=name
-                                                            )
+err_tot, forecast_tot,true_tot = calculate_scenario(data=data,
+                                                         target=target,
+                                                         methods_to_train=methods_to_train,
+                                                         horizon=horizon,
+                                                         train_ratio=train_ratio,
+                                                         feature_transformation=feature_transformation,
+                                                         time_stationarization=time_stationarization,
+                                                         datetime_features=datetime_features,
+                                                         target_lag_selection=target_lag_selection,
+                                                         target_pred_selection=target_pred_selection,
+                                                         external_feature_selection=external_feature_selection,
+                                                         post_processing_quantile=post_processing_quantile,
+                                                         post_processing_value=post_processing_value,
+                                                         evaluation_metrics=evaluation_metrics,
+                                                         device=device,prob_forecasting = True)
 ```
 
 
@@ -156,42 +169,42 @@ loss_function = pytorchtools.ContinuousPiecewiseLinearFunction(breakpoint)
 
 ## How to add your own forecasting method into the framework
 Based on Pytorch, users can simply add their own defined deep learning network to our forecasting framework.
-Firstly, users need to define the initialization method for the model in [./models/model_init.py](https://github.com/Leo-VK/ProEnFo/blob/main/models/model_init.py)
+Firstly, users need to define the initialization method for the model in [./models/model_init.py](https://anonymous.4open.science/r/EnFoAV-3033/models/model_init.py)
 ```python
-class MYQuantile_Regressor(MultiQuantileRegressor):
-    def __init__(self, quantiles: List[float] = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]):
+class Predictor(MultiQuantileRegressor):
+    def __init__(self, quantiles: List[float],device,ex_model = None):
         super().__init__(
             X_scaler=StandardScaler(),
             y_scaler=StandardScaler(),
-            quantiles=quantiles)
+            quantiles=quantiles,
+            ex_model = ex_model,
+            device = device)
+        
 
-    def set_params(self, input_dim: int,external_features_diminsion: int):
+    def set_params(self, configs):
         self.model = models.pytorch.PytorchRegressor(
-            model=models.pytorch.MYQuantile_Model(input_dim,external_features_diminsion, n_output=len(self.quantiles)),
-            loss_function=pytorchtools.PinballLoss(self.quantiles))
+            model=my_MQuantile_model(configs).to(self.device),
+            ex_model = define_ex_model(self.ex_model,configs),
+            loss_function=pytorchtools.PinballLoss(self.quantiles,self.device),device =self.device)
         return self
 ```
-Secondly, users need to add the structure of the model in [./models/pytorch.py](https://github.com/Leo-VK/ProEnFo/blob/main/models/pytorch.py)
+Secondly, users need to add the structure of the model in [./models/pytorch.py](https://anonymous.4open.science/r/EnFoAV-3033/models/pytorch.py)
 ```python
-class MYQuantile_Model(nn.Module):
-    def __init__(self,input_parameters):
+class my_MQuantile_Model(nn.Module):
+    def __init__(self,configs):
         super(MYQuantile_Model, self).__init__()
-        '''
-        build your model here
-        '''
-    def forward(self, X_batch,X_batch_ex):
-        '''
-        input the data into the model, here X_batch is the sequence data while X_batch_ex is the external variable.
-        '''
+        #Code here
+    def forward(self, *inputs):
+        #Code here
         return output
 ```
 Finally, you can add your model to the methods_to_train.
 ```python
-methods_to_train.append(mi.MYQuantile_Regressor())
+methods_to_train.append(mi.Predictor())
 ```
 
 ## Forecasting evaluation
-We include several metrics to evaluate the forecasting performance and summarize them below. For details, users can check it in [./evaluation/metrics.py](https://github.com/Leo-VK/ProEnFo/blob/main/evaluation/metrics.py)
+We include several metrics to evaluate the forecasting performance and summarize them below. For details, users can check it in [./evaluation/metrics.py](https://anonymous.4open.science/r/EnFoAV-3033/evaluation/metrics.py)
 |    |       Metrics      | Calculation method | Metric type |                                                                     Description                                                                    |
 |:--:|:------------------:|:------------------:|:-----------:|:--------------------------------------------------------------------------------------------------------------------------------------------------:|
 |  1 | CoverageError (CE) |          $$CE = \frac{1}{n} \sum_{t=1}^{n} (I(L_t \leq y_t \leq U_t) - (UB - LB))$$         |  probability  |    measures the difference between the proportion of actual observations falling within the forecasting interval and the expected coverage rate    |
