@@ -11,19 +11,18 @@ The datasets and their forecasting results in this archive will be released afte
 We include several different datasets in our load forecasting archive. And there is a summary of them.
 |    |  Dataset | No.of series | Length | Resolution |  Load type |          External variables         |
 |:--:|:--------:|:------------:|:------:|:----------:|:----------:|:-----------------------------------:|
-|  1 |  Covid19 |       1      |  31912 |   hourly   | aggregated |    airTemperature, Humidity, etc    |
-|  2 |   GEF12  |      20      |  39414 |   hourly   | aggregated |            airTemperature           |
+|  1 |  Covid19 |       1      |  24976 |   hourly   | aggregated |    airTemperature, Humidity, etc    |
+|  2 |   GEF12  |      20      |  21870 |   hourly   | aggregated |            airTemperature           |
 |  3 |   GEF14  |       1      |  17520 |   hourly   | aggregated |            airTemperature           |
 |  4 |   GEF17  |       8      |  17544 |   hourly   | aggregated |            airTemperature           |
 |  5 |    PDB   |       1      |  17520 |   hourly   | aggregated |            airTemperature           |
-|  6 |  Spanish |       1      |  35064 |   hourly   | aggregated | airTemperature, seaLvlPressure, etc |
+|  6 |  Spanish |       1      |  17520 |   hourly   | aggregated | airTemperature, seaLvlPressure, etc |
 |  7 |    Hog   |      24      |  17544 |   hourly   |  building  |   airTemperature, wind speed, etc   |
 |  8 |   Bull   |      41      |  17544 |   hourly   |  building  |   airTemperature, wind speed, etc   |
 |  9 | Cockatoo |       1      |  17544 |   hourly   |  building  |   airTemperature, wind speed, etc   |
-| 10 |    ELF   |       1      |  21792 |   hourly   | aggregated |                  No                 |
-| 11 |    UCI   |      321     |  26304 |   hourly   |  building  |                  No                 |
-| 12 |    REF   |       72     |  -     | 15 minute  |      -     |     irradiance, temperature, etc    |
-| 13 |    Electricity Price   |       2     |  -     | hourly  |      -     |     load prediction, wind power prediction, etc    |
+| 10 |    Panama   |       1      |  13033 |   hourly   | aggregated |                  airTemperature                 |
+| 11 |    REF   |       72     |  -     | 15 minute  |      -     |     irradiance, temperature, etc    |
+| 12 |    Electricity Price   |       2     |  -     | hourly  |      -     |     load prediction, wind power prediction, etc    |
 
 Among them, REF is our newly open-source renewable energy dataset, which contains several renewable energy series including onshore wind, offshore wind, and PV. We will make it open-source soon.
 
@@ -128,7 +127,7 @@ import warnings
 warnings.filterwarnings("ignore")
 import ast
 ```
-Import the dataset, the example of the format of the dataset can be seen in [./data](https://github.com/Leo-VK/ProEnFo/tree/main/data/GFC14_load). 
+Import the dataset, the example of the format of the dataset can be seen in [./data](https://anonymous.4open.science/r/EnFoAV-3033/data/GEF14/). 
 ```python
 repeat = 3
 site_id = "GEF14"
