@@ -163,7 +163,7 @@ breakpoint_new.pop("__header__")
 breakpoint_new.pop("__version__")
 breakpoint_new.pop("__globals__")
 breakpoint_raw=list(breakpoint_new.values())
-breakpoint = pytorchtools.breakpoint_generator(breakpoint_raw)[8]#take hour 9 as an example
+breakpoint = pytorchtools.breakpoint_generator(breakpoint_raw)[7]#take hour 8 as an example
 loss_function = pytorchtools.ContinuousPiecewiseLinearFunction(breakpoint)
 ```
 
