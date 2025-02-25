@@ -311,7 +311,7 @@ def calculate_scenario(data: pd.DataFrame,
             perf_timer = Timer()
             perf_timer.start()
             if isinstance(method, mi.PointRegressor):
-                configs = Configs(data = data_name,model = method.name,seq_len=len(target_lags), label_len=len(target_lags), pred_len=len(target_preds)+1
+                configs = Configs(data = data_name,model = method.name,seq_len=len(target_lags), label_len=len(target_lags)//2, pred_len=len(target_preds)+1
                                     ,in_dim = Y_train.shape[-1]//(len(target_preds)+1),out_dim = 1,ex_dim = external_features_diminsion,ex_time_dim = len(datetime_features),
                                     ex_out_dim = 1,device = device)
                 if 'ex_HT' in method.name:
